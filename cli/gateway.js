@@ -21,6 +21,7 @@ import http from "http";
 import { createPublicClient, createWalletClient, http as viemHttp, keccak256, toBytes, formatUnits, parseUnits } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { base } from "viem/chains";
+import { verify } from "./verify.js";
 
 const REGISTRY  = "0x3ca993e7183824e11b2a65cf183b4c3521bf4754";
 const TOKEN     = "0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144";
@@ -106,6 +107,14 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/openapi.json") {
       res.writeHead(200, { "content-type":"application/json" });
       res.end(JSON.stringify(OPENAPI));
+      return;
+    }
+    if (req.method === "GET" && url.pathname === "/oracle") {
+      const claim = url.searchParams.get("claim");
+      if (!claim) { res.writeHead(400, {"content-type":"application/json"}); res.end(JSON.stringify({error:"claim query param required"})); return; }
+      const r = await verify(claim);
+      res.writeHead(200, { "content-type":"application/json" });
+      res.end(JSON.stringify(r));
       return;
     }
     if (req.method === "GET" && url.pathname === "/claims") {

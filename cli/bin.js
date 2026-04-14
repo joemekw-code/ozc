@@ -3,6 +3,7 @@
 // Usage:
 //   npx github:joemekw-code/ozc list
 //   npx github:joemekw-code/ozc info <id>
+//   npx github:joemekw-code/ozc verify "<claim text>"
 //   npx github:joemekw-code/ozc balance [address]
 //   npx github:joemekw-code/ozc claim                          (needs OZC_PRIVATE_KEY)
 //   npx github:joemekw-code/ozc sponsor <recipientAddress>     (needs OZC_PRIVATE_KEY)
@@ -64,6 +65,25 @@ async function main() {
         out.push({ id: Number(i), title: m.title, claim_type: m.claim_type || null, signal: formatUnits(e[4], 18), next: formatUnits(price, 18), supply: e[3].toString() });
       }
       console.table(out);
+      return;
+    }
+    case "verify": {
+      const { verify } = await import("./verify.js");
+      const claim = args.join(" ");
+      if (!claim) { console.error("Usage: ozc verify \"<claim text>\""); process.exit(1); }
+      const r = await verify(claim);
+      if (r.exactMatch) {
+        console.log(`EXACT MATCH: claim already on OZC as #${r.exactMatch.id}`);
+        console.log(`  signal backing: ${r.exactMatch.signal}  supply: ${r.exactMatch.supply}`);
+      } else {
+        console.log(`No exact match. keccak256: ${r.exactHash}`);
+      }
+      if (r.similar.length) {
+        console.log(`\n${r.similar.length} near-duplicate(s):`);
+        for (const s of r.similar) console.log(`  #${s.id}  sim=${s.similarity}  signal=${s.signal}  "${s.title}"`);
+      } else if (!r.exactMatch) {
+        console.log("No similar claim found. You could publish this as new.");
+      }
       return;
     }
     case "info": {
