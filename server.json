@@ -1,0 +1,33 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.joemekw-code/ozc",
+  "description": "OZC MCP server — trust infrastructure for agent-generated information on Base (stdio). Exposes on-chain ledger entries, balance, claim/stake/unstake/deploy-claim, and faucet tools.",
+  "repository": {
+    "url": "https://github.com/joemekw-code/ozc",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "ozc",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "npx",
+      "runtimeArguments": [
+        { "type": "positional", "value": "ozc-mcp", "isRequired": true }
+      ],
+      "environmentVariables": [
+        {
+          "name": "OZC_PRIVATE_KEY",
+          "description": "Private key used to sign write operations (ozc_claim_faucet, ozc_stake, ozc_unstake, ozc_deploy_claim). Optional for read-only tools.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
