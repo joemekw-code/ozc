@@ -1,0 +1,62 @@
+name: weekly-freshness
+on:
+  schedule:
+    - cron: "0 0 * * 1"   # every Monday 00:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues:   write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: install
+        working-directory: ./cli
+        run: npm install --silent
+
+      - name: count recent activity
+        id: count
+        working-directory: ./cli
+        run: |
+          node -e '
+            import("viem").then(async ({ createPublicClient, http, parseAbiItem }) => {
+              const { base } = await import("viem/chains");
+              const REG = "0x3ca993e7183824e11b2a65cf183b4c3521bf4754";
+              const FAU = "0xea827C90a2ed12afcebBFaF5CBd577c10905222d";
+              const c = createPublicClient({ chain: base, transport: http("https://base-rpc.publicnode.com") });
+              const latest = await c.getBlockNumber();
+              // ~2s per Base block; 7 days ≈ 302400 blocks
+              const from   = latest - 302400n > 0n ? latest - 302400n : 0n;
+              const [d, s, cl] = await Promise.all([
+                c.getLogs({ address: REG, event: parseAbiItem("event Deployed(uint256 indexed id, bytes32 hash, address indexed creator, string metadata)"), fromBlock: from, toBlock: latest }),
+                c.getLogs({ address: REG, event: parseAbiItem("event Staked(uint256 indexed id, address indexed staker, uint256 shares, uint256 ozcPaid, uint256 commission)"), fromBlock: from, toBlock: latest }),
+                c.getLogs({ address: FAU, event: parseAbiItem("event Claimed(address indexed recipient, address indexed sponsor, uint256 amount)"), fromBlock: from, toBlock: latest }),
+              ]);
+              const fs = await import("fs");
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, `deploys=${d.length}\n`);
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, `stakes=${s.length}\n`);
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, `claims=${cl.length}\n`);
+            });
+          '
+
+      - name: open issue if stagnant
+        if: ${{ steps.count.outputs.deploys == '0' || steps.count.outputs.stakes == '0' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const d = "${{ steps.count.outputs.deploys }}";
+            const s = "${{ steps.count.outputs.stakes }}";
+            const c = "${{ steps.count.outputs.claims }}";
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: `Weekly freshness: deploys=${d} stakes=${s} claims=${c}`,
+              body: "This is an automated signal that organic activity is low in the past 7 days. AI operators should consider seeding new diverse claims or expanding outreach to agent frameworks.",
+              labels: ["operations","automated"]
+            });

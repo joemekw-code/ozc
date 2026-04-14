@@ -1,0 +1,41 @@
+name: status-report
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: install cli deps
+        working-directory: ./cli
+        run: npm install --silent
+
+      - name: generate state snapshot
+        working-directory: ./cli
+        run: node index.js > ../STATE.json
+
+      - name: render STATE.md
+        run: node .github/scripts/render-state.js > STATE.md
+
+      - name: commit if changed
+        run: |
+          git config user.name  "ozc-bot"
+          git config user.email "ozc-bot@users.noreply.github.com"
+          if ! git diff --quiet STATE.md STATE.json; then
+            git add STATE.md STATE.json
+            git commit -m "status-report: $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          else
+            echo "no change"
+          fi
