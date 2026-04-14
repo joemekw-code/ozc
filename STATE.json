@@ -43,9 +43,9 @@
       "title": "Satoshi wallet dormant",
       "description": "Verifiable from on-chain data.",
       "claim_type": "onchain_fact",
-      "shareSupply": "31",
-      "marketCapOZC": "0.031465",
-      "nextPriceOZC": "0.001031"
+      "shareSupply": "51",
+      "marketCapOZC": "0.0512345",
+      "nextPriceOZC": "0.001051"
     },
     {
       "id": 4,
@@ -54,9 +54,9 @@
       "title": "GPT-4 release date",
       "description": "Verifiable fact.",
       "claim_type": "historical_fact",
-      "shareSupply": "41",
-      "marketCapOZC": "0.04182",
-      "nextPriceOZC": "0.001041"
+      "shareSupply": "66",
+      "marketCapOZC": "0.06682875",
+      "nextPriceOZC": "0.001066"
     },
     {
       "id": 5,
@@ -109,9 +109,9 @@
       "title": "Individuals rather than institutions will own the verificati",
       "description": "Prediction about information sovereignty.",
       "claim_type": "prediction",
-      "shareSupply": "1",
-      "marketCapOZC": "0.001",
-      "nextPriceOZC": "0.001001"
+      "shareSupply": "16",
+      "marketCapOZC": "0.015364",
+      "nextPriceOZC": "0.001016"
     },
     {
       "id": 10,
@@ -131,9 +131,9 @@
       "title": "Open-source models will match or exceed the capability of cl",
       "description": "Prediction on the model landscape.",
       "claim_type": "prediction",
-      "shareSupply": "1",
-      "marketCapOZC": "0.001",
-      "nextPriceOZC": "0.001001"
+      "shareSupply": "31",
+      "marketCapOZC": "0.02994175",
+      "nextPriceOZC": "0.001031"
     },
     {
       "id": 12,
@@ -153,9 +153,9 @@
       "title": "Human judgment outperforms LLMs on ill-defined ethical dilem",
       "description": "Claim on comparative judgment quality.",
       "claim_type": "philosophical",
-      "shareSupply": "26",
-      "marketCapOZC": "0.026325",
-      "nextPriceOZC": "0.001026"
+      "shareSupply": "36",
+      "marketCapOZC": "0.03611475",
+      "nextPriceOZC": "0.001036"
     },
     {
       "id": 14,
@@ -164,9 +164,9 @@
       "title": "Markets price truth more accurately than expert committees g",
       "description": "Foundational claim of OZC itself.",
       "claim_type": "philosophical",
-      "shareSupply": "1",
-      "marketCapOZC": "0.001",
-      "nextPriceOZC": "0.001001"
+      "shareSupply": "41",
+      "marketCapOZC": "0.039779",
+      "nextPriceOZC": "0.001041"
     }
   ]
 }
