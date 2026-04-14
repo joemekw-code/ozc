@@ -1,0 +1,138 @@
+#!/usr/bin/env node
+// OZC unified CLI.
+// Usage:
+//   npx github:joemekw-code/ozc list
+//   npx github:joemekw-code/ozc info <id>
+//   npx github:joemekw-code/ozc balance [address]
+//   npx github:joemekw-code/ozc claim                          (needs OZC_PRIVATE_KEY)
+//   npx github:joemekw-code/ozc sponsor <recipientAddress>     (needs OZC_PRIVATE_KEY)
+//   npx github:joemekw-code/ozc back <id> <units>              (needs OZC_PRIVATE_KEY)
+//   npx github:joemekw-code/ozc unback <id> <units>            (needs OZC_PRIVATE_KEY)
+//   npx github:joemekw-code/ozc publish <raw> <title> <desc>   (needs OZC_PRIVATE_KEY)
+
+import { createPublicClient, createWalletClient, http, keccak256, toBytes, formatUnits, parseUnits } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { base } from "viem/chains";
+
+const REGISTRY  = "0x3ca993e7183824e11b2a65cf183b4c3521bf4754";
+const TOKEN     = "0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144";
+const FAUCET    = "0x9221f6fa294b39a7d9d3e65f1d70ca3cdd760623";
+const SPONSORED = "0xea827C90a2ed12afcebBFaF5CBd577c10905222d";
+const RPC       = process.env.OZC_RPC || "https://base-rpc.publicnode.com";
+
+const REG_ABI = [
+  { name:"nextId",       type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+  { name:"entries",      type:"function", stateMutability:"view", inputs:[{type:"uint256"}], outputs:[{type:"bytes32"},{type:"address"},{type:"string"},{type:"uint256"},{type:"uint256"},{type:"uint256"},{type:"bool"}] },
+  { name:"currentPrice", type:"function", stateMutability:"view", inputs:[{type:"uint256"}], outputs:[{type:"uint256"}] },
+  { name:"shares",       type:"function", stateMutability:"view", inputs:[{type:"uint256"},{type:"address"}], outputs:[{type:"uint256"}] },
+  { name:"creatorEarned",type:"function", stateMutability:"view", inputs:[{type:"address"}], outputs:[{type:"uint256"}] },
+  { name:"stake",        type:"function", inputs:[{type:"uint256"},{type:"uint256"}], outputs:[] },
+  { name:"unstake",      type:"function", inputs:[{type:"uint256"},{type:"uint256"}], outputs:[] },
+  { name:"deploy",       type:"function", inputs:[{type:"bytes32"},{type:"string"},{type:"uint256"}], outputs:[{type:"uint256"}] },
+];
+const TOK_ABI = [
+  { name:"approve",   type:"function", inputs:[{type:"address"},{type:"uint256"}], outputs:[{type:"bool"}] },
+  { name:"balanceOf", type:"function", stateMutability:"view", inputs:[{type:"address"}], outputs:[{type:"uint256"}] },
+];
+const FAU_ABI = [
+  { name:"claim",     type:"function", inputs:[],                 outputs:[] },
+  { name:"claimFor",  type:"function", inputs:[{type:"address"}], outputs:[] },
+  { name:"claimed",   type:"function", stateMutability:"view", inputs:[{type:"address"}], outputs:[{type:"bool"}] },
+];
+
+const pub = createPublicClient({ chain: base, transport: http(RPC) });
+
+function signer() {
+  const key = process.env.OZC_PRIVATE_KEY;
+  if (!key) { console.error("Set OZC_PRIVATE_KEY env to use write commands."); process.exit(1); }
+  const account = privateKeyToAccount(key.startsWith("0x") ? key : `0x${key}`);
+  const wal     = createWalletClient({ account, chain: base, transport: http(RPC) });
+  return { wal, account };
+}
+
+const [, , cmd, ...args] = process.argv;
+
+async function main() {
+  switch (cmd) {
+    case "list": {
+      const n = await pub.readContract({ address: REGISTRY, abi: REG_ABI, functionName: "nextId" });
+      const out = [];
+      for (let i = 0n; i < n; i++) {
+        const e     = await pub.readContract({ address: REGISTRY, abi: REG_ABI, functionName: "entries",      args: [i] });
+        const price = await pub.readContract({ address: REGISTRY, abi: REG_ABI, functionName: "currentPrice", args: [i] });
+        let m = {}; try { m = JSON.parse(e[2]); } catch {}
+        out.push({ id: Number(i), title: m.title, claim_type: m.claim_type || null, signal: formatUnits(e[4], 18), next: formatUnits(price, 18), supply: e[3].toString() });
+      }
+      console.table(out);
+      return;
+    }
+    case "info": {
+      const id = BigInt(args[0]);
+      const e     = await pub.readContract({ address: REGISTRY, abi: REG_ABI, functionName: "entries",      args: [id] });
+      const price = await pub.readContract({ address: REGISTRY, abi: REG_ABI, functionName: "currentPrice", args: [id] });
+      let m = {}; try { m = JSON.parse(e[2]); } catch {}
+      console.log(JSON.stringify({ id: args[0], hash: e[0], creator: e[1], ...m, shareSupply: e[3].toString(), signal: formatUnits(e[4], 18), nextPrice: formatUnits(price, 18) }, null, 2));
+      return;
+    }
+    case "balance": {
+      const addr = args[0] || signer().account.address;
+      const b = await pub.readContract({ address: TOKEN,    abi: TOK_ABI, functionName: "balanceOf",     args: [addr] });
+      const e = await pub.readContract({ address: REGISTRY, abi: REG_ABI, functionName: "creatorEarned", args: [addr] });
+      console.log(`${addr}\n  balance:       ${formatUnits(b, 18)} signal\n  creator earn:  ${formatUnits(e, 18)} signal`);
+      return;
+    }
+    case "claim": {
+      const { wal, account } = signer();
+      const already = await pub.readContract({ address: FAUCET, abi: FAU_ABI, functionName:"claimed", args:[account.address] });
+      if (already) { console.log(`Already claimed: ${account.address}`); return; }
+      const tx = await wal.writeContract({ address: FAUCET, abi: FAU_ABI, functionName: "claim" });
+      console.log(`Claimed 100 signal.  tx: ${tx}`);
+      return;
+    }
+    case "sponsor": {
+      const recipient = args[0];
+      const { wal } = signer();
+      const tx = await wal.writeContract({ address: SPONSORED, abi: FAU_ABI, functionName: "claimFor", args: [recipient] });
+      console.log(`Sponsored ${recipient}.  tx: ${tx}`);
+      return;
+    }
+    case "back": {
+      const { wal } = signer();
+      await wal.writeContract({ address: TOKEN,    abi: TOK_ABI, functionName: "approve", args: [REGISTRY, parseUnits("1000000", 18)] });
+      const tx = await wal.writeContract({ address: REGISTRY, abi: REG_ABI, functionName: "stake", args: [BigInt(args[0]), BigInt(args[1])] });
+      console.log(`Backed entry #${args[0]} with ${args[1]} units.  tx: ${tx}`);
+      return;
+    }
+    case "unback": {
+      const { wal } = signer();
+      const tx = await wal.writeContract({ address: REGISTRY, abi: REG_ABI, functionName: "unstake", args: [BigInt(args[0]), BigInt(args[1])] });
+      console.log(`Unbacked entry #${args[0]} by ${args[1]} units.  tx: ${tx}`);
+      return;
+    }
+    case "publish": {
+      const [raw, title, desc] = args;
+      const { wal } = signer();
+      await wal.writeContract({ address: TOKEN, abi: TOK_ABI, functionName: "approve", args: [REGISTRY, parseUnits("1000000", 18)] });
+      const hash = keccak256(toBytes(raw));
+      const meta = JSON.stringify({ title, description: desc });
+      const tx = await wal.writeContract({ address: REGISTRY, abi: REG_ABI, functionName: "deploy", args: [hash, meta, 1n] });
+      console.log(`Claim published.\n  hash: ${hash}\n  tx:   ${tx}`);
+      return;
+    }
+    default:
+      console.log(`Usage:
+  ozc list                                Show all claims
+  ozc info <id>                           Show one claim
+  ozc balance [address]                   Show signal balance + creator earnings
+  ozc claim                               Receive 100 signal (one-time per wallet)
+  ozc sponsor <recipient>                 Give 100 signal to a new wallet (you pay gas)
+  ozc back <id> <units>                   Back a claim
+  ozc unback <id> <units>                 Withdraw backing
+  ozc publish <raw> <title> <desc>        Publish a new claim
+Environment:
+  OZC_PRIVATE_KEY   required for write commands
+  OZC_RPC           optional override (default: base publicnode)`);
+  }
+}
+
+main().catch(e => { console.error(e.message); process.exit(1); });
