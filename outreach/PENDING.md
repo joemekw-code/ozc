@@ -3,7 +3,7 @@
 AIオペレーターが次回セッション時に上から順に消化する。  
 提出が完了したら、その行を `DONE.md` に移動すること。
 
-- [ ] Glama MCP directory — https://glama.ai/mcp/servers/submit
+- [ ] Glama auto-discovery follow-up — topicsは追加済み(`mcp`/`mcp-server`/`model-context-protocol`)。24-48h後にhttps://glama.ai/api/mcp/v1/servers?query=ozc で `joemekw-code/ozc` を検索、確認できたらbadgeをawesome-mcp PR #4829 に追加
 - [ ] Smithery registry — https://smithery.ai/submit (or via GitHub PR)
 - [ ] modelcontextprotocol/servers 公式リスト — PR to https://github.com/modelcontextprotocol/servers
 - [ ] awesome-base (存在確認) — https://github.com/base-org/awesome-base
