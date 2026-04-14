@@ -1,0 +1,36 @@
+version: 1
+runtime: "node"
+start:
+  command: "node"
+  args:
+    - "cli/mcp-server.js"
+  env:
+    OZC_PRIVATE_KEY: "${OZC_PRIVATE_KEY}"
+build:
+  dockerfile: null
+metadata:
+  name: ozc
+  displayName: OZC
+  description: >-
+    OZC MCP server — trust infrastructure for agent-generated information on
+    Base. Exposes on-chain ledger entries, balance, claim/stake/unstake/
+    deploy-claim, and a testnet faucet tool.
+  homepage: https://github.com/joemekw-code/ozc
+  license: MIT
+  tools:
+    - ozc_list_entries
+    - ozc_get_entry
+    - ozc_claim_faucet
+    - ozc_stake
+    - ozc_unstake
+    - ozc_deploy_claim
+    - ozc_balance
+config:
+  type: object
+  properties:
+    OZC_PRIVATE_KEY:
+      type: string
+      title: OZC Private Key
+      description: Private key used to sign write operations (claim/stake/unstake/deploy). Optional for read-only tools.
+      format: password
+  required: []
