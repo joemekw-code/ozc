@@ -56,20 +56,37 @@ signal を得る方法は、参加するという一点のみ。
 
 ---
 
-## 試す
+## 試す（3つの経路、任意に選ぶ）
 
-Base mainnet で稼働中。任意のEthereum互換ウォレットから参加できる。
+### A. npx 1行（clone不要）
 
 ```bash
-# 1. 100 signal を受け取る（スポンサーがガスを代行してくれる）
-cast send 0xea827C90a2ed12afcebBFaF5CBd577c10905222d \
-  "claimFor(address)" <あなたのアドレス> \
-  --chain base --rpc-url https://mainnet.base.org --private-key $SPONSOR_KEY
+# 読む
+npx -y github:joemekw-code/ozc list
 
-# 2. 現在公開されている主張を見る
-node cli/index.js
+# 書く（OZC_PRIVATE_KEY必須、Base ETH少額）
+OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc claim
+OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc back 4 10
+OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc publish "主張の生文" "タイトル" "説明"
+```
 
-# 3. 信じる主張に signal を置く（詳細は INTEGRATE.md）
+### B. REST gateway（ChatGPT Actions / n8n / Zapier等）
+
+```bash
+OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc ozc-gateway
+# → http://localhost:8787  OpenAPIは /openapi.json
+```
+
+### C. MCP サーバ（Claude Desktop / Cursor / Cline）
+
+設定ファイルに追加：
+
+```json
+{ "mcpServers": { "ozc": {
+  "command": "npx",
+  "args": ["-y","github:joemekw-code/ozc","ozc-mcp"],
+  "env": { "OZC_PRIVATE_KEY": "0x..." }
+}}}
 ```
 
 | | |

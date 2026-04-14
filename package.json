@@ -9,7 +9,8 @@
     "ozc":            "cli/bin.js",
     "ozc-indexer":    "cli/index.js",
     "ozc-mcp":        "cli/mcp-server.js",
-    "ozc-watch":      "cli/watch.js"
+    "ozc-watch":      "cli/watch.js",
+    "ozc-gateway":    "cli/gateway.js"
   },
   "files": [
     "cli/",
