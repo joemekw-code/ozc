@@ -1,0 +1,172 @@
+{
+  "network": "base-mainnet",
+  "registry": "0x3ca993e7183824e11b2a65cf183b4c3521bf4754",
+  "count": 15,
+  "entries": [
+    {
+      "id": 0,
+      "hash": "0xd84e08e37e5fd6a5ce2b30a4a9a8bd23cecc5a0692c770445a87f577f9710bc8",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "OZC v2 Genesis",
+      "description": "5% commission to creators. Network grows when truth pays.",
+      "claim_type": null,
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 1,
+      "hash": "0xde712342308378e68012c8e074b2b7fd71059a6489af028dcf2175d5c22d7743",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Bitcoin Genesis Date",
+      "description": "Verifiable historical fact.",
+      "claim_type": "historical_fact",
+      "shareSupply": "31",
+      "marketCapOZC": "0.02994175",
+      "nextPriceOZC": "0.001031"
+    },
+    {
+      "id": 2,
+      "hash": "0xfd06e556973c9527d2cf2df751df49cd6c8617c3a5852fa248cee0cccac076bf",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "L2 surpasses L1 by 2027",
+      "description": "Prediction. Resolves end of 2027.",
+      "claim_type": "prediction",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 3,
+      "hash": "0x9eb668fe8802f0e5064eb4a08996bc0d5c2cb579571c92ce7b0d5a095fd1f197",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Satoshi wallet dormant",
+      "description": "Verifiable from on-chain data.",
+      "claim_type": "onchain_fact",
+      "shareSupply": "31",
+      "marketCapOZC": "0.031465",
+      "nextPriceOZC": "0.001031"
+    },
+    {
+      "id": 4,
+      "hash": "0x0bba6bf4f7edc0fd92f71630a2b7ec3299036250f50eebe8d192b51d3ef6a129",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "GPT-4 release date",
+      "description": "Verifiable fact.",
+      "claim_type": "historical_fact",
+      "shareSupply": "41",
+      "marketCapOZC": "0.04182",
+      "nextPriceOZC": "0.001041"
+    },
+    {
+      "id": 5,
+      "hash": "0xff369d034c5b984ced21114c91e8f625eaa5c41686fd73858cf1dcdfc91f3fe0",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Bot traffic majority 2024",
+      "description": "Reported by several security firms.",
+      "claim_type": "statistical",
+      "shareSupply": "16",
+      "marketCapOZC": "0.01612",
+      "nextPriceOZC": "0.001016"
+    },
+    {
+      "id": 6,
+      "hash": "0xde46cd82f6b57828e7f03c15b716f0bd4720e068436b7afe6e0e8b37b791c700",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "AI agents own wallets by 2030",
+      "description": "Prediction. Resolves 2030.",
+      "claim_type": "prediction",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 7,
+      "hash": "0xde18ca71d0cc1bae1cd69d1a53b27b384d80a5ffe9c7686751a10e9d21ece491",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Turing test obsolete",
+      "description": "Philosophical claim on evaluation paradigms.",
+      "claim_type": "philosophical",
+      "shareSupply": "13",
+      "marketCapOZC": "0.013078",
+      "nextPriceOZC": "0.001013"
+    },
+    {
+      "id": 8,
+      "hash": "0xcc59ba43ff8831050b1cada8595e22739f95e70e12b8425fbc844dc23cdf11c9",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Low gas week in 2026",
+      "description": "Short-term prediction, verifiable from historical gas data.",
+      "claim_type": "prediction",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 9,
+      "hash": "0xf41dda3c1616832f9d3322636e741815e5242462fe64ca1328cd7ee6fce35839",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Individuals rather than institutions will own the verificati",
+      "description": "Prediction about information sovereignty.",
+      "claim_type": "prediction",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 10,
+      "hash": "0x3d7257963bad3cfd2f08900df981dd2ee771e0b3204216ec8f9d82c2c7b572f0",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "The first trillion-dollar company owned primarily by AI agen",
+      "description": "Long-term prediction.",
+      "claim_type": "prediction",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 11,
+      "hash": "0xdc87ad02753f1374abbb7f141a27603b90c00d8829cca4a4c697f83efab3d77f",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Open-source models will match or exceed the capability of cl",
+      "description": "Prediction on the model landscape.",
+      "claim_type": "prediction",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    },
+    {
+      "id": 12,
+      "hash": "0x108feb7dc00ead6a7702a9d12c7c2b9f0f6bc6ed62b7623c6dc28dce05b58fa3",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "The majority of code written in production software in 2027 ",
+      "description": "Prediction on development practices.",
+      "claim_type": "prediction",
+      "shareSupply": "9",
+      "marketCapOZC": "0.009036",
+      "nextPriceOZC": "0.001009"
+    },
+    {
+      "id": 13,
+      "hash": "0x89c92e61db324acfe13307457464e3885d7155dc78c5d1af271b9362e540db9c",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Human judgment outperforms LLMs on ill-defined ethical dilem",
+      "description": "Claim on comparative judgment quality.",
+      "claim_type": "philosophical",
+      "shareSupply": "26",
+      "marketCapOZC": "0.026325",
+      "nextPriceOZC": "0.001026"
+    },
+    {
+      "id": 14,
+      "hash": "0x03aeb4a6ff1015e86eda32635e325f4adccdbf262a38a0cefcbba0b541080ddf",
+      "creator": "0x670F2F9f4cD36330f34aD407A3cb91bFF577B3b6",
+      "title": "Markets price truth more accurately than expert committees g",
+      "description": "Foundational claim of OZC itself.",
+      "claim_type": "philosophical",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
+    }
+  ]
+}
