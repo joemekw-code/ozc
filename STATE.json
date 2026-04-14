@@ -1,7 +1,7 @@
 {
   "network": "base-mainnet",
   "registry": "0x3ca993e7183824e11b2a65cf183b4c3521bf4754",
-  "count": 15,
+  "count": 16,
   "entries": [
     {
       "id": 0,
@@ -153,9 +153,9 @@
       "title": "Human judgment outperforms LLMs on ill-defined ethical dilem",
       "description": "Claim on comparative judgment quality.",
       "claim_type": "philosophical",
-      "shareSupply": "36",
-      "marketCapOZC": "0.03611475",
-      "nextPriceOZC": "0.001036"
+      "shareSupply": "46",
+      "marketCapOZC": "0.0459995",
+      "nextPriceOZC": "0.001046"
     },
     {
       "id": 14,
@@ -167,6 +167,17 @@
       "shareSupply": "41",
       "marketCapOZC": "0.039779",
       "nextPriceOZC": "0.001041"
+    },
+    {
+      "id": 15,
+      "hash": "0x5636b846002361a401c80a8b3fdb3cb8b2e2cdea4b8e819a042320cb3e686181",
+      "creator": "0xB8E5dDB2f5FC9DCF93c6F9A22Ab109f14A981d0f",
+      "title": "情報信頼は権威から分離できる",
+      "description": "OZCが立証しようとしている命題そのもの。最初の人間著者として署名する。",
+      "claim_type": "foundational",
+      "shareSupply": "1",
+      "marketCapOZC": "0.001",
+      "nextPriceOZC": "0.001001"
     }
   ]
 }
