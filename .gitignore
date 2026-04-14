@@ -1,0 +1,5 @@
+.env
+out/
+cache/
+cli/node_modules/
+deployments.json
