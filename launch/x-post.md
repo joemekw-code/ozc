@@ -1,5 +1,10 @@
 # X / Twitter 投稿テンプレート
 
+**最優先：デモGIFを必ず添付してください。**  
+ファイル: `launch/demo.gif` (または https://raw.githubusercontent.com/joemekw-code/ozc/main/launch/demo.gif )
+
+テキストより映像が語る。60秒で「confident LLMの嘘を市場が黙らせる」瞬間が見える。
+
 そのままコピペ可能。3種類用意、用途で選んでください。
 
 ---
