@@ -1,7 +1,7 @@
 {
-  "name": "ozc-cli",
+  "name": "ozc-mcp",
   "version": "0.1.0",
-  "description": "OZC Data Market CLI",
+  "description": "OZC MCP Server — trust infrastructure for agent-generated information. Stake credibility on claims. Lies cost you.",
   "main": "ozc.js",
   "bin": {
     "ozc": "./ozc.js",
@@ -9,6 +9,8 @@
   },
   "scripts": {},
   "license": "MIT",
+  "keywords": ["mcp", "mcp-server", "ozc", "trust", "information", "credibility", "claude", "ai-agent", "base", "onchain"],
+  "repository": {"type": "git", "url": "https://github.com/joemekw-code/ozc"},
   "type": "module",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
