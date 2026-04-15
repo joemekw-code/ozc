@@ -21,18 +21,28 @@ export async function timeline(address) {
   const lower = address.toLowerCase();
   const client = createPublicClient({ chain: base, transport: http(RPC) });
 
-  // Registry deployed at block 26614000 approx (early Apr 14). Use 26000000 as safe lower bound.
-  const fromBlock = 26000000n;
-  const latest    = await client.getBlockNumber();
+  // Registry deployed around block 44690000 on Base. Chunk by 49000 to respect RPC 50k limit.
+  const startBlock = 44600000n;
+  const latest     = await client.getBlockNumber();
 
-  const [deploys, stakedAsStaker, stakedAsCreator, unstakes, claims, commissions] = await Promise.all([
-    client.getLogs({ address: REGISTRY, event: EV_DEPLOYED,   args: { creator: address }, fromBlock, toBlock: latest }),
-    client.getLogs({ address: REGISTRY, event: EV_STAKED,     args: { staker:  address }, fromBlock, toBlock: latest }),
-    // need creator-targeted filter — Staked has only id+staker indexed, so we filter all by id->creator after:
-    Promise.resolve([]),
-    client.getLogs({ address: REGISTRY, event: EV_UNSTAKED,   args: { staker:  address }, fromBlock, toBlock: latest }),
-    client.getLogs({ address: FAUCET,   event: EV_CLAIMED,    args: { recipient: address }, fromBlock, toBlock: latest }),
-    client.getLogs({ address: REGISTRY, event: EV_COMMISSION, args: { creator: address }, fromBlock, toBlock: latest }),
+  async function chunkedLogs(opts) {
+    const out = [];
+    for (let from = startBlock; from <= latest; from += 49000n) {
+      const to = from + 48999n > latest ? latest : from + 48999n;
+      try {
+        const logs = await client.getLogs({ ...opts, fromBlock: from, toBlock: to });
+        out.push(...logs);
+      } catch (e) { /* skip chunk on error */ }
+    }
+    return out;
+  }
+
+  const [deploys, stakedAsStaker, unstakes, claims, commissions] = await Promise.all([
+    chunkedLogs({ address: REGISTRY, event: EV_DEPLOYED,   args: { creator: address } }),
+    chunkedLogs({ address: REGISTRY, event: EV_STAKED,     args: { staker:  address } }),
+    chunkedLogs({ address: REGISTRY, event: EV_UNSTAKED,   args: { staker:  address } }),
+    chunkedLogs({ address: FAUCET,   event: EV_CLAIMED,    args: { recipient: address } }),
+    chunkedLogs({ address: REGISTRY, event: EV_COMMISSION, args: { creator: address } }),
   ]);
 
   const events = [];
