@@ -93,6 +93,19 @@ const tools = [
     description: "Show OZC balance and creator earnings for the active wallet.",
     inputSchema: { type:"object", properties:{} },
   },
+  {
+    name: "ozc_filter",
+    description: "Personal information filter. Given a list of URLs/identifiers, annotate each with on-chain commitment data (committed ETH, share count). Use this to re-rank any retriever's output based on how much humans have committed to each piece of information. You choose the weights.",
+    inputSchema: {
+      type:"object",
+      properties: {
+        identifiers: { type:"array", items:{ type:"string" } },
+        weights:     { type:"object", description:"Optional weights. Keys: committedETH, shares. Default: {committedETH:1.0}" },
+        min_committed_eth: { type:"number" },
+      },
+      required: ["identifiers"],
+    },
+  },
 ];
 
 const server = new Server({ name:"ozc", version:"0.1.0" }, { capabilities:{ tools:{} } });
@@ -171,6 +184,13 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         return { content:[{ type:"text", text: `Claim deployed.\nhash: ${hash}\napprove tx: ${approveTx}\ndeploy tx:  ${deployTx}` }] };
       }
 
+      case "ozc_filter": {
+        const { enrich, rank, minCommittedETH } = await import("./filter.js");
+        let items = await enrich(args.identifiers || []);
+        if (args.min_committed_eth != null) items = minCommittedETH(items, args.min_committed_eth);
+        const ranked = rank(items, args.weights || { committedETH: 1.0 });
+        return { content:[{ type:"text", text: JSON.stringify(ranked, null, 2) }] };
+      }
       case "ozc_balance": {
         const { account } = wallet();
         const bal     = await pub.readContract({ address: TOKEN,    abi: TOKEN_ABI,    functionName:"balanceOf",     args:[account.address] });
