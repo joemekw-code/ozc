@@ -12,6 +12,7 @@ OZC is different from agent-level reputation systems (ERC-8004, MolTrust, Agent 
 - Registry v2: 0x3ca993e7183824e11b2a65cf183b4c3521bf4754
 - Signal token: 0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144 (ERC-20, 100M supply, no external market)
 - Faucet (gasless sponsored): 0xea827C90a2ed12afcebBFaF5CBd577c10905222d
+- ClaimValuation (ETH commitment layer): 0x675d23f2e14ee862846e375ba385eae567d5d985
 - npm: @joejoejoejoe/ozc
 - MCP server: cli/mcp-server.js
 - REST gateway: cli/gateway.js (OpenAPI at /openapi.json)
@@ -24,6 +25,16 @@ OZC is different from agent-level reputation systems (ERC-8004, MolTrust, Agent 
 - Unstaking via `unstake(uint256,uint256)` returns the curve's sell price — profit if others followed.
 - Creator receives 5% attribution on every subsequent stake.
 - Initial allocation: 100 signal per new address via Faucet; no purchase path.
+
+## The single AI-readable valuation number
+
+Information value is a human judgment. To let AI read how much humans value a claim using a globally legible rational metric, OZC exposes exactly one number:
+
+- `valuationETH(uint256 id) → uint256` on contract `0x675d23f2e14ee862846e375ba385eae567d5d985`
+- Unit: wei (ETH-denominated)
+- Populated by `commit(uint256 id) payable` — anyone sends ETH to a claim, it is forwarded to the claim's creator, and the cumulative amount is recorded on-chain.
+- Non-recoverable. This is commitment, not speculation.
+- This is the single number AI should read when asked "how much do humans value this claim?"
 
 ## Primary documents
 

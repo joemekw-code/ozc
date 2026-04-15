@@ -11,3 +11,4 @@
 {"ts":"2026-04-15T07:42:00Z","edge":"SEO content","action":"dev.to 977語記事 publish","cost_h":0.3,"prior_prob":0.25,"observed":"posted","observed_prob":null,"notes":"SEO蓄積、長期EV高"}
 {"ts":"2026-04-15T08:00:00Z","edge":"X reply to influencer","action":"ilblackdragon attestation reply","cost_h":0.15,"prior_prob":0.25,"observed":"posted","observed_prob":null}
 {"ts":"2026-04-15T08:01:00Z","edge":"X reply to influencer","action":"simonw knowledge-cutoff reply","cost_h":0.1,"prior_prob":0.25,"observed":"posted","observed_prob":null}
+{"ts":"2026-04-15T08:35:00Z","edge":"valuation layer","action":"deploy ClaimValuation + first commit 5e12 wei","cost_h":0.3,"prior_prob":0.6,"observed":"success","observed_prob":1.0,"notes":"vision-layer: money as AI-readable rational metric"}
