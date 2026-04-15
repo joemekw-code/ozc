@@ -47,6 +47,59 @@
 </section>
 
 <section>
+  <h2>planning graph · current position in red</h2>
+  <div class="card" style="padding:1em;overflow-x:auto">
+    <div class="mermaid" id="graph">
+flowchart LR
+  subgraph L1["L1 — strategic milestones"]
+    direction LR
+    S0(["S0<br/>現在"])
+    M1(["M1<br/>N=1価値"])
+    M2(["M2<br/>10人"])
+    M3(["M3<br/>自発claim"])
+    M4(["M4<br/>第三者言及"])
+    M5(["M5<br/>tool組込"])
+    M6(["M6<br/>100人"])
+    M7(["M7<br/>1000人"])
+    S0 -->|"0.9<br/>2-4h"| M1
+    M1 -->|"0.2<br/>x-post"| M2
+    M2 -->|"0.6"| M3
+    M3 -->|"0.3"| M4
+    M4 -->|"0.3"| M5
+    M5 -->|"0.8"| M6
+    M6 -->|"0.9"| M7
+  end
+
+  S0 -.shortcut 0.05-0.10.-> M4
+  S0 -.shortcut 0.02-0.05.-> M3
+  M1 -.shortcut 0.10-0.20.-> M5
+  M4 -.shortcut 0.10.-> M6
+
+  subgraph L2["L2 — S0 → M1 の内部選択"]
+    direction TB
+    A["M1-a timeline可視化<br/>◀ 選択済"]
+    B["M1-b verifyレイヤー"]
+    C["M1-c 確信ログ"]
+  end
+
+  S0 --> A --> M1
+  S0 --> B
+  S0 --> C
+
+  classDef here fill:#c33,stroke:#fff,color:#fff
+  classDef done fill:#0b4,stroke:#fff,color:#fff
+  classDef active fill:#d80,stroke:#fff,color:#fff
+  class S0 here
+  class A active
+    </div>
+  </div>
+  <p class="m" style="font-size:.8em;margin-top:.5em">
+    実線 = メインチャネル（確率・期待コスト付き）／点線 = Contraction Hierarchies ショートカット／
+    <span class="r">赤 = 現在位置</span>／<span class="a">橙 = 進行中のサブタスク</span>
+  </p>
+</section>
+
+<section>
   <h2>milestones (hierarchical plan)</h2>
   <table id="tbl-milestones">
     <thead><tr><th>id</th><th>condition</th><th>status</th></tr></thead>
@@ -87,6 +140,10 @@
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
+</script>
 <script type="module">
 const RPC      = "https://base-rpc.publicnode.com";
 const REG      = "0x3ca993e7183824e11b2a65cf183b4c3521bf4754";
