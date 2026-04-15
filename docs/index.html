@@ -69,5 +69,29 @@ footer{text-align:center;font-size:10px;color:#bbb;padding:16px 0;border-top:1px
 
 <footer>OZC v0.1 · Base mainnet · MIT License · Built by Joe & AI</footer>
 </div>
+<script>
+const API='https://activated-peterson-erp-removing.trycloudflare.com';
+async function load(){
+  try{
+    const r=await fetch(API+'/claims');
+    const d=await r.json();
+    const sorted=d.sort((a,b)=>Number(b.shareSupply)-Number(a.shareSupply)).slice(0,8);
+    document.getElementById('entries').textContent=d.length;
+    const creators=new Set(d.map(e=>e.creator));
+    document.getElementById('stakers').textContent=creators.size;
+    document.getElementById('feed').innerHTML=sorted.map(c=>`
+      <div class="entry">
+        <div class="entry-top">
+          <span class="entry-title">${c.title}</span>
+          <span class="entry-mcap">${Number(c.marketCapOZC).toFixed(3)} OZC</span>
+        </div>
+        <div class="entry-desc">${c.description}</div>
+        <div class="entry-meta">${c.shareSupply} shares · ${c.claim_type||'general'}</div>
+      </div>
+    `).join('');
+  }catch(e){console.log('API offline, showing static data')}
+}
+load();setInterval(load,30000);
+</script>
 </body>
 </html>
