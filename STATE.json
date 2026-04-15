@@ -109,9 +109,9 @@
       "title": "Individuals rather than institutions will own the verificati",
       "description": "Prediction about information sovereignty.",
       "claim_type": "prediction",
-      "shareSupply": "16",
-      "marketCapOZC": "0.015364",
-      "nextPriceOZC": "0.001016"
+      "shareSupply": "19",
+      "marketCapOZC": "0.01826245",
+      "nextPriceOZC": "0.001019"
     },
     {
       "id": 10,
@@ -153,9 +153,9 @@
       "title": "Human judgment outperforms LLMs on ill-defined ethical dilem",
       "description": "Claim on comparative judgment quality.",
       "claim_type": "philosophical",
-      "shareSupply": "46",
-      "marketCapOZC": "0.0459995",
-      "nextPriceOZC": "0.001046"
+      "shareSupply": "48",
+      "marketCapOZC": "0.04798785",
+      "nextPriceOZC": "0.001048"
     },
     {
       "id": 14,
@@ -164,9 +164,9 @@
       "title": "Markets price truth more accurately than expert committees g",
       "description": "Foundational claim of OZC itself.",
       "claim_type": "philosophical",
-      "shareSupply": "41",
-      "marketCapOZC": "0.039779",
-      "nextPriceOZC": "0.001041"
+      "shareSupply": "44",
+      "marketCapOZC": "0.0427487",
+      "nextPriceOZC": "0.001044"
     },
     {
       "id": 15,
@@ -175,9 +175,9 @@
       "title": "情報信頼は権威から分離できる",
       "description": "OZCが立証しようとしている命題そのもの。最初の人間著者として署名する。",
       "claim_type": "foundational",
-      "shareSupply": "1",
-      "marketCapOZC": "0.001",
-      "nextPriceOZC": "0.001001"
+      "shareSupply": "6",
+      "marketCapOZC": "0.006015",
+      "nextPriceOZC": "0.001006"
     }
   ]
 }
