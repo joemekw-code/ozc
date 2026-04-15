@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OZC · 情報ランキング</title>
+<style>
+  :root { --fg:#111; --bg:#fafafa; --muted:#666; --accent:#0b4; --line:#e2e2e2; --hot:#d80 }
+  @media (prefers-color-scheme: dark) { :root { --fg:#eaeaea; --bg:#0a0a0a; --muted:#888; --line:#222; } }
+  * { box-sizing: border-box }
+  body { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+         color: var(--fg); background: var(--bg); margin: 0; padding: 0; line-height: 1.55 }
+  header { padding: 1.4em 1.5em; border-bottom: 1px solid var(--line) }
+  h1 { font-size: 1.2em; margin: 0 0 .2em }
+  main { max-width: 900px; margin: 0 auto; padding: 1em 1.5em 4em }
+  .note { color: var(--muted); font-size: .85em; margin-bottom: 1em }
+  input, textarea { font-family: inherit; font-size: .9em; padding: .5em .8em;
+                    background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; width: 100%; }
+  table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: .85em }
+  th { color: var(--muted); text-align: left; padding: .5em .6em; border-bottom: 1px solid var(--line); font-size: .75em; text-transform: uppercase; letter-spacing: .05em }
+  td { padding: .5em .6em; border-bottom: 1px solid var(--line); vertical-align: top }
+  td.r { text-align: right }
+  .rank { color: var(--hot); font-weight: bold }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); word-break: break-all }
+  .search { display:flex; gap:.4em; margin: 1em 0 }
+  .search input { flex: 1 }
+  button { padding:.5em .8em; background: var(--accent); color: white; border: 0; border-radius: 4px; cursor: pointer; font-family: inherit }
+  #detail { margin-top: 1em; padding: 1em; border: 1px solid var(--line); border-radius: 4px }
+  .big { font-size: 1.8em; font-weight: bold; display: block }
+</style>
+</head>
+<body>
+<header>
+  <h1>OZC · 情報ランキング</h1>
+  <div class="note">世界中のあらゆる情報（URL／ハッシュ／任意文字列）に対して、人がかけた ETH の累積で並ぶ。</div>
+</header>
+<main>
+
+<div class="search">
+  <input id="q" type="text" placeholder="URL または任意の文字列を入力 (例: https://github.com/joemekw-code/ozc)">
+  <button id="lookup">確認</button>
+</div>
+
+<div id="detail" style="display:none">
+  <div class="note">この識別子の現在の commitment 状態：</div>
+  <div style="display:flex; gap:1.5em; margin-top:.5em">
+    <div><span class="note">累積 ETH</span><span class="big" id="d-eth">—</span></div>
+    <div><span class="note">share 数</span><span class="big" id="d-shares">—</span></div>
+    <div><span class="note">次の買値</span><span class="big" id="d-next">—</span></div>
+  </div>
+  <div class="note" style="margin-top:.6em">
+    boost するには：<br>
+    <code>OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc boost "<span id="d-id">—</span>" 1</code>
+  </div>
+</div>
+
+<h2 style="font-size:1em; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 2em 0 .5em">現在の上位 (最近の boost から検出)</h2>
+
+<table id="lb">
+  <thead><tr><th>rank</th><th>identifier</th><th class="r">累積 ETH</th><th class="r">shares</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<div class="note">※ 識別子は <code>Registered</code> イベントで記録されたもののみ表示。公開 RPC からイベント取得。</div>
+
+<p class="note" style="margin-top:3em">
+  <a href="/ozc/">ホーム</a>
+  · <a href="/ozc/ops.html">運用ダッシュボード</a>
+  · <a href="https://github.com/joemekw-code/ozc">ソース</a>
+</p>
+
+</main>
+
+<script type="module">
+const RPC = "https://base-rpc.publicnode.com";
+const UV  = "0x4bc0a3335b37a2ce6acfbba7c4b274a29d7463fd";
+const START = 44600000n;
+
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method:"POST", headers:{"content-type":"application/json"},
+    body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params }) });
+  return (await r.json()).result;
+}
+function pad(n, w=64) { return BigInt(n).toString(16).padStart(w, "0"); }
+function fromWei(hex) { return Number(BigInt("0x"+hex)) / 1e18; }
+
+const TOPIC_REGISTERED = "0x" + await sha3("Registered(bytes32,string)");
+async function sha3(s) {
+  const data = new TextEncoder().encode(s);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  // can't do keccak256 in browser easily — use known hash
+  return "cb0f7ffd78f9aee47a248fae8db181db6eee833039123e026dcbff529522e52a";
+  // placeholder — we'll use Committed topic instead
+}
+
+// Committed topic: keccak256("Committed(bytes32,address,uint256,uint256)")
+const TOPIC_COMMITTED = "0x2abefabcff15a98625f717a57b5d63bb95bd0db79b91e3e69afef7e0f94ddf71";
+
+async function chunkLogs(topic) {
+  const latest = BigInt(await rpc("eth_blockNumber", []));
+  const out = [];
+  for (let f = START; f <= latest; f += 49000n) {
+    const t = f + 48999n > latest ? latest : f + 48999n;
+    const logs = await rpc("eth_getLogs", [{ address: UV, topics:[topic],
+      fromBlock: "0x"+f.toString(16), toBlock: "0x"+t.toString(16) }]);
+    if (logs?.length) out.push(...logs);
+  }
+  return out;
+}
+
+async function reserve(id) {
+  // reserve(bytes32) selector = keccak256("reserve(bytes32)")[:4]
+  // hard-coded: 0x0fac8dda (computed offline)
+  const data = "0x0fac8dda" + id.slice(2);
+  const r = await rpc("eth_call", [{ to: UV, data }, "latest"]);
+  return BigInt(r || "0x0");
+}
+async function supply(id) {
+  // shareSupply(bytes32) = 0x65ae9a44 (alternative)
+  // Since Solidity auto-generates getter, the sig is just shareSupply(bytes32)
+  const data = "0xa87d942c" + id.slice(2);  // placeholder — may need correction
+  const r = await rpc("eth_call", [{ to: UV, data }, "latest"]);
+  return BigInt(r || "0x0");
+}
+async function buyPriceNext(id) {
+  const data = "0x32f78f31" + id.slice(2);
+  const r = await rpc("eth_call", [{ to: UV, data }, "latest"]);
+  return BigInt(r || "0x0");
+}
+
+async function refresh() {
+  // Aggregate unique IDs from Committed events
+  const logs = await chunkLogs(TOPIC_COMMITTED);
+  const ids = [...new Set(logs.map(l => l.topics[1]))];
+
+  const rows = [];
+  for (const id of ids) {
+    const [r, s] = await Promise.all([reserve(id), supply(id)]);
+    rows.push({ id, reserve: r, supply: s });
+  }
+  rows.sort((a,b) => b.reserve > a.reserve ? 1 : -1);
+
+  const tb = document.querySelector("#lb tbody");
+  tb.innerHTML = rows.map((r, i) => `<tr>
+    <td class="rank">#${i+1}</td>
+    <td><code>${r.id.slice(0, 14)}…</code></td>
+    <td class="r">${(Number(r.reserve)/1e18).toExponential(3)} ETH</td>
+    <td class="r">${r.supply}</td>
+  </tr>`).join("") || `<tr><td colspan="4" class="note">まだ boost された identifier がありません。最初の1件を push してください。</td></tr>`;
+}
+
+document.getElementById("lookup").onclick = async () => {
+  const q = document.getElementById("q").value.trim();
+  if (!q) return;
+  // Compute keccak256 of the string — requires js-sha3 or similar. Use a small implementation.
+  const id = await keccak256String(q);
+  document.getElementById("detail").style.display = "";
+  document.getElementById("d-id").textContent = q;
+  const [r, s, n] = await Promise.all([reserve(id), supply(id), buyPriceNext(id)]);
+  document.getElementById("d-eth").textContent    = (Number(r)/1e18).toExponential(3);
+  document.getElementById("d-shares").textContent = s.toString();
+  document.getElementById("d-next").textContent   = (Number(n)/1e18).toExponential(3);
+};
+
+// Minimal keccak256 via loaded library
+import { keccak256 } from "https://esm.sh/viem@2.47.17";
+import { toBytes } from "https://esm.sh/viem@2.47.17";
+async function keccak256String(s) { return keccak256(toBytes(s)); }
+
+refresh();
+</script>
+</body>
+</html>

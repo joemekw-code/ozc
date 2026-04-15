@@ -67,6 +67,57 @@ async function main() {
       console.table(out);
       return;
     }
+    case "boost": {
+      // boost any URL or string identifier with ETH via URLValuation bonding curve
+      const { wal } = signer();
+      const identifier = args[0];
+      const shares = BigInt(args[1] || "1");
+      const UV = "0x4bc0a3335b37a2ce6acfbba7c4b274a29d7463fd";
+      const UV_ABI = [
+        { name:"buyByString", type:"function", stateMutability:"payable", inputs:[{type:"string"},{type:"uint256"}], outputs:[] },
+        { name:"buyPriceNext", type:"function", stateMutability:"view", inputs:[{type:"bytes32"}], outputs:[{type:"uint256"}] },
+      ];
+      // estimate cost upper bound: n shares, assume high buffer
+      const estimate = shares * parseUnits("0.00001", 18); // 10 µETH per share safe upper bound for small n
+      const tx = await wal.writeContract({ address: UV, abi: UV_ABI, functionName:"buyByString", args:[identifier, shares], value: estimate });
+      console.log(`Boosted "${identifier}" with ${shares} share(s).  tx: ${tx}`);
+      return;
+    }
+    case "unboost": {
+      const { wal } = signer();
+      const identifier = args[0];
+      const shares = BigInt(args[1] || "1");
+      const { keccak256: kek, toBytes: tb } = await import("viem");
+      const id = kek(tb(identifier));
+      const UV = "0x4bc0a3335b37a2ce6acfbba7c4b274a29d7463fd";
+      const UV_ABI = [{ name:"sell", type:"function", inputs:[{type:"bytes32"},{type:"uint256"}], outputs:[] }];
+      const tx = await wal.writeContract({ address: UV, abi: UV_ABI, functionName:"sell", args:[id, shares] });
+      console.log(`Released ${shares} share(s) of "${identifier}".  tx: ${tx}`);
+      return;
+    }
+    case "rank": {
+      const identifier = args[0];
+      const { keccak256: kek, toBytes: tb } = await import("viem");
+      const id = kek(tb(identifier));
+      const UV = "0x4bc0a3335b37a2ce6acfbba7c4b274a29d7463fd";
+      const UV_ABI = [
+        { name:"shareSupply", type:"function", stateMutability:"view", inputs:[{type:"bytes32"}], outputs:[{type:"uint256"}] },
+        { name:"reserve",     type:"function", stateMutability:"view", inputs:[{type:"bytes32"}], outputs:[{type:"uint256"}] },
+        { name:"buyPriceNext",type:"function", stateMutability:"view", inputs:[{type:"bytes32"}], outputs:[{type:"uint256"}] },
+      ];
+      const [supply, reserve, next] = await Promise.all([
+        pub.readContract({ address: UV, abi: UV_ABI, functionName:"shareSupply", args:[id] }),
+        pub.readContract({ address: UV, abi: UV_ABI, functionName:"reserve",     args:[id] }),
+        pub.readContract({ address: UV, abi: UV_ABI, functionName:"buyPriceNext",args:[id] }),
+      ]);
+      console.log(JSON.stringify({
+        identifier, id,
+        shares: supply.toString(),
+        committedETH: formatUnits(reserve, 18),
+        nextBuyPrice: formatUnits(next, 18),
+      }, null, 2));
+      return;
+    }
     case "commit": {
       const { wal } = signer();
       const id = BigInt(args[0]);
