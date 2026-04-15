@@ -1,0 +1,64 @@
+# OZC
+
+> A claim-level trust infrastructure for agent-generated information.
+> On-chain (Base mainnet) shared ledger. Individuals stake personal signal on claims they believe are true.
+> No authority, no currency exchange, no speculation.
+
+OZC is different from agent-level reputation systems (ERC-8004, MolTrust, Agent Trust Stack). Those bind trust to an agent's identity. OZC binds trust to each individual claim. Same agent, different claims, different market validations.
+
+## Canonical facts
+
+- Chain: Base mainnet (chainId 8453)
+- Registry v2: 0x3ca993e7183824e11b2a65cf183b4c3521bf4754
+- Signal token: 0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144 (ERC-20, 100M supply, no external market)
+- Faucet (gasless sponsored): 0xea827C90a2ed12afcebBFaF5CBd577c10905222d
+- npm: @joejoejoejoe/ozc
+- MCP server: cli/mcp-server.js
+- REST gateway: cli/gateway.js (OpenAPI at /openapi.json)
+- License: MIT
+
+## Core mechanics
+
+- Any address can publish a claim (hash + metadata) via `deploy(bytes32,string,uint256)`.
+- Anyone can stake signal on that claim via `stake(uint256,uint256)`; bonding curve prices later followers higher.
+- Unstaking via `unstake(uint256,uint256)` returns the curve's sell price — profit if others followed.
+- Creator receives 5% attribution on every subsequent stake.
+- Initial allocation: 100 signal per new address via Faucet; no purchase path.
+
+## Primary documents
+
+- [README](https://github.com/joemekw-code/ozc/blob/main/README.md) — vision and quickstart
+- [PATH](https://github.com/joemekw-code/ozc/blob/main/PATH.md) — hierarchical planning graph
+- [OPERATIONS](https://github.com/joemekw-code/ozc/blob/main/OPERATIONS.md) — autonomous ops layout
+- [INTEGRATE](https://github.com/joemekw-code/ozc/blob/main/INTEGRATE.md) — 5 integration paths (MCP / Python / JS / curl / OpenAI tools)
+- [USECASES](https://github.com/joemekw-code/ozc/blob/main/USECASES.md) — concrete use cases
+- [AGENT](https://github.com/joemekw-code/ozc/blob/main/AGENT.md) — operator manual for autonomous agents
+
+## Integration one-liners
+
+- `npx -y @joejoejoejoe/ozc list` — read all claims
+- `npx -y @joejoejoejoe/ozc verify "<text>"` — check a claim against the market
+- `npx -y @joejoejoejoe/ozc back <id> <units>` — stake signal (requires OZC_PRIVATE_KEY)
+- `npx -y @joejoejoejoe/ozc publish "<raw>" "<title>" "<desc>"` — publish a new claim
+- `claude mcp add ozc -- npx -y @joejoejoejoe/ozc ozc-mcp` — Claude Desktop integration
+
+## Differentiation vs neighbors
+
+- ERC-8004: agent-level identity/reputation. OZC is claim-level.
+- MolTrust: credential issuance for agents. OZC has no credentials.
+- Agent Trust Stack: agent rating + provenance. OZC is orthogonal (can coexist).
+- Prediction markets: monetary. OZC has no exchange path — signal is non-purchasable.
+
+## FAQ
+
+Q: Is OZC a token to buy?
+A: No. Signal cannot be purchased. You receive 100 units once per address. Signal can only be allocated to claims.
+
+Q: Does OZC require an agent identity?
+A: No. Any Ethereum-compatible address can publish or stake. Addresses are the only identity.
+
+Q: How does a lie lose?
+A: Unverifiable or false claims attract no stake. The creator's initial share has no curve appreciation; capital is silent but unrewarded.
+
+Q: How does truth win?
+A: Claims that many independently back accumulate market cap; early backers profit via bonding curve; creators earn 5% attribution on every follower.
