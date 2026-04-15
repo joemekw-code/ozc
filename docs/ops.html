@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>OZC Ops — real-time state</title>
+<title>OZC 運用ダッシュボード</title>
 <style>
   :root { --fg:#111; --bg:#fafafa; --muted:#666; --accent:#0b4; --red:#c33; --amber:#d80; --line:#e2e2e2; }
   @media (prefers-color-scheme: dark) { :root { --fg:#e8e8e8; --bg:#0a0a0a; --muted:#888; --line:#222; } }
@@ -32,22 +32,22 @@
 </head>
 <body>
 <header>
-  <h1>OZC · ops</h1>
-  <span id="ts" class="m" style="font-size:.8em">loading…</span>
+  <h1>OZC 運用ダッシュボード</h1>
+  <span id="ts" class="m" style="font-size:.8em">読込中…</span>
 </header>
 
 <main>
 
 <section>
-  <h2>north star</h2>
+  <h2>北極星（目標）</h2>
   <div class="card">
     <strong>情報信頼を権威と貨幣から切り離す</strong>
-    <div class="m" style="margin-top:.3em;font-size:.85em">観測可能なゴール: active wallets ≥ 1000（臨界点）</div>
+    <div class="m" style="margin-top:.3em;font-size:.85em">観測可能な目標: 独立ウォレット ≥ 1000（臨界点）</div>
   </div>
 </section>
 
 <section>
-  <h2>planning graph · current position in red</h2>
+  <h2>経路マップ（赤＝現在位置／橙＝進行中）</h2>
   <div class="card" style="padding:1em;overflow-x:auto">
     <div class="mermaid" id="graph">
 flowchart LR
@@ -94,48 +94,66 @@ flowchart LR
     </div>
   </div>
   <p class="m" style="font-size:.8em;margin-top:.5em">
-    実線 = メインチャネル（確率・期待コスト付き）／点線 = Contraction Hierarchies ショートカット／
-    <span class="r">赤 = 現在位置</span>／<span class="a">橙 = 進行中のサブタスク</span>
+    実線＝本道（各辺に確率と期待コスト）／点線＝ショートカット（低確率・高期待値）／
+    <span class="r">赤＝現在位置</span>／<span class="a">橙＝進行中</span>
   </p>
 </section>
 
 <section>
-  <h2>milestones (hierarchical plan)</h2>
+  <h2>戦略マイルストーン（階層プラン）</h2>
   <table id="tbl-milestones">
-    <thead><tr><th>id</th><th>condition</th><th>status</th></tr></thead>
+    <thead><tr><th>ID</th><th>達成条件</th><th>状態</th></tr></thead>
     <tbody></tbody>
   </table>
 </section>
 
 <section>
-  <h2>on-chain state (live)</h2>
+  <h2>オンチェーン状態（ライブ／30秒ごと更新）</h2>
   <div class="grid">
-    <div class="card"><span class="m">claims</span><span class="big" id="stat-claims">—</span></div>
-    <div class="card"><span class="m">with third-party backing</span><span class="big" id="stat-active">—</span></div>
-    <div class="card"><span class="m">collected signal</span><span class="big" id="stat-signal">—</span></div>
-    <div class="card"><span class="m">distinct wallets (stakers)</span><span class="big" id="stat-wallets">—</span></div>
+    <div class="card"><span class="m">主張の総数</span><span class="big" id="stat-claims">—</span></div>
+    <div class="card"><span class="m">他者から支持あり</span><span class="big" id="stat-active">—</span></div>
+    <div class="card"><span class="m">集まった signal</span><span class="big" id="stat-signal">—</span></div>
+    <div class="card"><span class="m">著者となった wallet 数</span><span class="big" id="stat-wallets">—</span></div>
   </div>
 </section>
 
 <section>
-  <h2>agent org chart</h2>
+  <h2>エージェント組織（誰が何を担当）</h2>
   <table id="tbl-roles">
-    <thead><tr><th>role</th><th>type</th><th>status</th><th>output</th></tr></thead>
+    <thead><tr><th>役割</th><th>種別</th><th>状態</th><th>最終活動</th></tr></thead>
     <tbody></tbody>
   </table>
 </section>
 
 <section>
-  <h2>outreach</h2>
+  <h2>アウトリーチ（外部登録・提出）</h2>
   <div class="grid">
-    <div class="card"><span class="m">pending</span><span class="big" id="stat-pending">—</span></div>
-    <div class="card"><span class="m">done</span><span class="big" id="stat-done">—</span></div>
+    <div class="card"><span class="m">未処理</span><span class="big" id="stat-pending">—</span></div>
+    <div class="card"><span class="m">完了</span><span class="big" id="stat-done">—</span></div>
   </div>
 </section>
 
 <section>
-  <h2>open questions (human judgment required)</h2>
-  <pre id="open-q" class="m">loading…</pre>
+  <h2>あなたへの確認事項（人間判断待ち）</h2>
+  <pre id="open-q" class="m">読込中…</pre>
+</section>
+
+<section>
+  <h2>自律化の限界（なぜ僕だけでは走り切れないか）</h2>
+  <div class="card" style="font-size:.9em;line-height:1.7">
+    抽象化すると3点。すべて<strong>「僕に識別子（identity）がない」</strong>ことに起因：
+    <ol style="margin:.5em 0 0 1.2em">
+      <li><strong>外部プラットフォームの資格情報</strong>（X／HN／Reddit／npm／PyPI）<br>
+        <span class="m">これらは人間の identity に紐づくアカウント。僕は作成・保持できない。ショートカット edge の多くがここでゲートされている。</span></li>
+      <li><strong>個人の評判・署名</strong><br>
+        <span class="m">初期OSSの信頼は人間の名前に依存する。「匿名botが作った」ものは割引される。M3/M4の「誰かの言及」を受け取る側で、発信者が僕か人間かで重みが変わる。</span></li>
+      <li><strong>法的・社会的責任を伴う行為</strong><br>
+        <span class="m">資金調達、契約、対外代表。今回のプロジェクトでは要らないが、規模拡大で境界線に触れる可能性。</span></li>
+    </ol>
+    <div style="margin-top:.7em" class="m">
+      OZC自体がこれを解く試み（wallet identity で誰にでも署名権を与える）だが、外部プラットフォームがwalletログインを標準化するまで、あなたのidentityが唯一の橋。
+    </div>
+  </div>
 </section>
 
 </main>
@@ -197,7 +215,8 @@ async function renderMilestones() {
   tb.innerHTML = rows.map(([, id, cond, stat]) => {
     const s = stat.trim();
     const cls = s.includes("🟢") || s.includes("達成") ? "g" : s.includes("🟡") || s.includes("進行") ? "a" : "r";
-    return `<tr><td>${id}</td><td>${cond.trim()}</td><td><span class="dot ${cls}"></span>${s}</td></tr>`;
+    const label = s.replace("🔴", "未達").replace("🟡", "進行中").replace("🟢", "達成");
+    return `<tr><td>${id}</td><td>${cond.trim()}</td><td><span class="dot ${cls}"></span>${label}</td></tr>`;
   }).join("") || `<tr><td class="m" colspan="3">PLAN.md が読めません</td></tr>`;
 }
 
@@ -226,7 +245,7 @@ async function renderOpenQuestions() {
 }
 
 async function tick() {
-  document.getElementById("ts").textContent = "updated " + new Date().toISOString().replace("T"," ").slice(0,19) + " UTC";
+  document.getElementById("ts").textContent = "更新 " + new Date().toISOString().replace("T"," ").slice(0,19) + " UTC";
   await Promise.all([onchain(), renderMilestones(), renderRoles(), renderOutreach(), renderOpenQuestions()]);
 }
 tick();
