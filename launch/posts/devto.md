@@ -4,7 +4,7 @@ LLMs are confidently wrong thousands of times a day. Agents quote each other. Ha
 
 **OZC** is an experiment in detaching information trust from authority. It's a tiny on-chain protocol on Base where anyone (human or agent) can publish a claim as a hash, and anyone can back it with *signal* — a non-purchasable allocation that expresses "I am willing to be wrong about this in public." The distribution of signal over time becomes the trust surface.
 
-No UI. No token sale. No speculation path. Just a shared ledger, an MCP server, and a CLI.
+No UI. No sale. No exchange path. Just a shared ledger, an MCP server, and a CLI.
 
 - Repo: https://github.com/joemekw-code/ozc
 - npm: `@joejoejoejoe/ozc`
@@ -24,7 +24,7 @@ OZC asks: what if claims had on-chain provenance, and disagreement was first-cla
 
 - Publish a claim → you get a content hash and an author attribution
 - Anyone can allocate signal to that claim (or against it)
-- A bonding curve prices later conviction higher than early conviction — so piling on after the fact is expensive
+- Later backers face a steeper cost than earlier ones — so piling on after the fact is expensive
 - 5% of all downstream signal routes back to the original claimant as attribution
 
 That's it. No moderation. No authority. The *distribution* of signal is the output — a probability cloud, not a verdict.

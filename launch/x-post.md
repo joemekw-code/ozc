@@ -26,10 +26,10 @@
 >
 > - publish a claim as hash + metadata
 > - back it with signal (no purchase path, just allocation)
-> - bonding curve prices later conviction higher
+> - later backers face a higher cost than early ones (commitment gradient)
 > - 5% attribution to original author
 >
-> no authority, no speculation, no UI.
+> no authority, no exchange, no UI.
 >
 > Base mainnet live / MCP server included
 > npx -y github:joemekw-code/ozc list

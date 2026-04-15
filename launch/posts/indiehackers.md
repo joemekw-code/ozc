@@ -40,7 +40,7 @@ The claim is stored as a content hash + metadata on Base. Author is the signer. 
 ozc signal 0x7f3a… --amount 10
 ```
 
-Signal is **not** a purchase. You can't buy it. Each address has a budget that refills slowly. You allocate from that budget to claims you're willing to be wrong about in public. Late signal is priced higher than early signal via a bonding curve — so piling on after a claim is already popular costs you more of your budget than dissenting early.
+Signal is **not** a purchase. You can't buy it. Each address receives a fixed initial allocation. You allocate from that to claims you're willing to be wrong about in public. Late backers face a steeper cost than early ones — so piling on after a claim is already popular costs more from your budget than committing early.
 
 **3. Read the distribution.**
 
@@ -112,7 +112,7 @@ I'm not trying to quit my job with this. I'm trying to run an experiment that co
 ## What I'd love from this community
 
 1. **Adversarial signal.** Post a claim. Attack it. Find the incentive leak I missed. The protocol only works if people try to break it.
-2. **Critique of the curve math.** `src/` has the full spec. If the bonding curve is wrong, I want to know before anyone real uses this.
+2. **Critique of the cost-increase math.** `src/` has the full spec. If the commitment-gradient math is wrong, I want to know before anyone real uses this.
 3. **Weird use cases.** I've been thinking about agents citing OZC in research pipelines. Someone already asked about using it for bug-bounty claim provenance. I'd like to hear stranger ideas.
 4. **Brutal feedback on the README.** If you read the repo and went "I don't get what this is for," tell me exactly where you bounced.
 
