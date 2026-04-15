@@ -66,18 +66,18 @@ signal を得る方法は、参加するという一点のみ。
 
 ```bash
 # 読む
-npx -y github:joemekw-code/ozc list
+npx -y @joejoejoejoe/ozc list
 
 # 書く（OZC_PRIVATE_KEY必須、Base ETH少額）
-OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc claim
-OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc back 4 10
-OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc publish "主張の生文" "タイトル" "説明"
+OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc claim
+OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc back 4 10
+OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc publish "主張の生文" "タイトル" "説明"
 ```
 
 ### B. REST gateway（ChatGPT Actions / n8n / Zapier等）
 
 ```bash
-OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc ozc-gateway
+OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc ozc-gateway
 # → http://localhost:8787  OpenAPIは /openapi.json
 ```
 
@@ -88,7 +88,7 @@ OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc ozc-gateway
 ```json
 { "mcpServers": { "ozc": {
   "command": "npx",
-  "args": ["-y","github:joemekw-code/ozc","ozc-mcp"],
+  "args": ["-y","@joejoejoejoe/ozc","ozc-mcp"],
   "env": { "OZC_PRIVATE_KEY": "0x..." }
 }}}
 ```
