@@ -110,4 +110,21 @@ OZC_PRIVATE_KEY=0x... npx -y github:joemekw-code/ozc ozc-gateway
 
 ---
 
+## Claude Code / MCP Install
+
+```bash
+claude mcp add ozc -- node /path/to/ozc/cli/mcp-server.js
+```
+
+Or clone and install:
+```bash
+git clone https://github.com/joemekw-code/ozc.git
+cd ozc/cli && npm install
+claude mcp add ozc -- node ./mcp-server.js
+```
+
+Set `OZC_PRIVATE_KEY` env for write operations (stake/deploy). Read-only works without it.
+
+---
+
 OZCは権威を求めない。支持と時間だけが判定する。

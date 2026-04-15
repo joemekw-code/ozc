@@ -4,7 +4,8 @@
   "description": "OZC Data Market CLI",
   "main": "ozc.js",
   "bin": {
-    "ozc": "./ozc.js"
+    "ozc": "./ozc.js",
+    "ozc-mcp": "./mcp-server.js"
   },
   "scripts": {},
   "license": "MIT",
