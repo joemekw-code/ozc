@@ -67,6 +67,26 @@ async function main() {
       console.table(out);
       return;
     }
+    case "commit": {
+      const { wal } = signer();
+      const id = BigInt(args[0]);
+      const eth = args[1]; // "0.000001" 等
+      if (!id && id !== 0n) { console.error("Usage: ozc commit <id> <eth_amount>"); process.exit(1); }
+      const wei = parseUnits(eth, 18);
+      const CV = "0x675d23f2e14ee862846e375ba385eae567d5d985";
+      const CV_ABI = [{ name:"commit", type:"function", stateMutability:"payable", inputs:[{type:"uint256"}], outputs:[] }];
+      const tx = await wal.writeContract({ address: CV, abi: CV_ABI, functionName:"commit", args:[id], value: wei });
+      console.log(`Committed ${eth} ETH to claim #${args[0]}.  tx: ${tx}`);
+      return;
+    }
+    case "valuation": {
+      const id = BigInt(args[0]);
+      const CV = "0x675d23f2e14ee862846e375ba385eae567d5d985";
+      const CV_ABI = [{ name:"valuationETH", type:"function", stateMutability:"view", inputs:[{type:"uint256"}], outputs:[{type:"uint256"}] }];
+      const v = await pub.readContract({ address: CV, abi: CV_ABI, functionName:"valuationETH", args:[id] });
+      console.log(`#${args[0]} valuationETH: ${formatUnits(v, 18)} ETH`);
+      return;
+    }
     case "timeline": {
       const { timeline } = await import("./timeline.js");
       const addr = args[0];

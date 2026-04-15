@@ -113,8 +113,15 @@ flowchart LR
     <div class="card"><span class="m">主張の総数</span><span class="big" id="stat-claims">—</span></div>
     <div class="card"><span class="m">他者から支持あり</span><span class="big" id="stat-active">—</span></div>
     <div class="card"><span class="m">集まった signal</span><span class="big" id="stat-signal">—</span></div>
+    <div class="card"><span class="m">commit された ETH</span><span class="big" id="stat-eth">—</span></div>
     <div class="card"><span class="m">著者となった wallet 数</span><span class="big" id="stat-wallets">—</span></div>
   </div>
+
+  <h2 style="margin-top:2em">valuationETH 分布（AIが読む唯一の尺度）</h2>
+  <table id="val-table">
+    <thead><tr><th>id</th><th>title</th><th style="text-align:right">valuationETH</th></tr></thead>
+    <tbody></tbody>
+  </table>
 </section>
 
 <section>
@@ -182,22 +189,65 @@ async function entry(i) {
   const r = await rpc("eth_call", [{ to:REG, data:"0xb30906d4"+pad(i) }, "latest"]);
   const h = r.slice(2);
   const creator = "0x" + h.slice(64+24, 128);
+  const strOff = parseInt(h.slice(128, 192), 16) * 2;
   const supply  = BigInt("0x"+h.slice(192, 256));
   const reserve = BigInt("0x"+h.slice(256, 320));
-  return { creator, supply, reserve };
+  const strLen = parseInt(h.slice(strOff, strOff+64), 16) * 2;
+  const strHex = h.slice(strOff+64, strOff+64+strLen);
+  let metadata = "";
+  try {
+    metadata = decodeURIComponent([...strHex.match(/.{1,2}/g)].map(b=>"%"+b).join(""));
+  } catch {}
+  return { creator, supply, reserve, metadata };
 }
+const CV = "0x675d23f2e14ee862846e375ba385eae567d5d985";
+async function valuationETH(id) {
+  // selector for valuationETH(uint256) = 0x03d5cb4e  (keccak256 first 4 bytes)
+  const data = "0x03d5cb4e" + pad(id);
+  const res = await rpc("eth_call", [{ to: CV, data }, "latest"]);
+  return BigInt(res || "0x0");
+}
+
+async function claimTitle(i) {
+  const e = await entry(i);
+  let m = {};
+  try { m = JSON.parse(e.metadata || ""); } catch {}
+  return m.title || `entry #${i}`;
+}
+
 async function onchain() {
   try {
     const n = await nextId();
     const arr = [];
-    for (let i=0;i<n;i++) arr.push(await entry(i));
+    const vals = [];
+    for (let i=0;i<n;i++) {
+      const e = await entry(i);
+      const v = await valuationETH(i);
+      arr.push(e);
+      vals.push({ id:i, val:v });
+    }
     const signal = arr.reduce((s,e)=>s + Number(e.reserve)/1e18, 0);
     const active = arr.filter(e => e.supply > 1n).length;
     const creators = new Set(arr.map(e=> e.creator.toLowerCase()));
+    const totalETH = vals.reduce((s,v)=>s + Number(v.val)/1e18, 0);
     document.getElementById("stat-claims").textContent  = n;
     document.getElementById("stat-active").textContent  = active;
-    document.getElementById("stat-signal").textContent  = signal.toFixed(3);
+    document.getElementById("stat-signal").textContent  = signal.toFixed(4);
+    document.getElementById("stat-eth").textContent     = totalETH.toExponential(3);
     document.getElementById("stat-wallets").textContent = creators.size;
+
+    // valuation table
+    const sorted = [...vals].sort((a,b)=> b.val > a.val ? 1 : b.val < a.val ? -1 : 0);
+    const tb = document.querySelector("#val-table tbody");
+    const rows = [];
+    for (const r of sorted) {
+      const e = arr[r.id];
+      let m = {}; try { m = JSON.parse(e.metadata || ""); } catch {}
+      const eth = Number(r.val) / 1e18;
+      const v = eth > 0 ? eth.toExponential(3) : "—";
+      rows.push(`<tr><td>${r.id}</td><td>${m.title || ""}</td><td style="text-align:right">${v} ETH</td></tr>`);
+    }
+    tb.innerHTML = rows.join("");
   } catch (e) {
     console.error(e);
   }
