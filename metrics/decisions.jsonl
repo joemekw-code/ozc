@@ -1,0 +1,11 @@
+{"ts":"2026-04-14T12:00:00Z","edge":"S0->M1","action":"deploy contracts","cost_h":1.0,"prior_prob":0.9,"observed":"success","observed_prob":1.0}
+{"ts":"2026-04-14T13:00:00Z","edge":"S0->M1","action":"deploy V2+Faucet","cost_h":0.8,"prior_prob":0.9,"observed":"success","observed_prob":1.0}
+{"ts":"2026-04-14T14:30:00Z","edge":"awesome-list PR","action":"awesome-mcp PR #4829","cost_h":0.2,"prior_prob":0.4,"observed":"pending","observed_prob":null,"notes":"maintainer review後Glama waiting"}
+{"ts":"2026-04-14T15:00:00Z","edge":"awesome-list PR","action":"awesome-ai-agents PR #782","cost_h":0.15,"prior_prob":0.5,"observed":"pending","observed_prob":null}
+{"ts":"2026-04-14T15:15:00Z","edge":"awesome-list PR","action":"awesome-ethereum PR #65","cost_h":0.1,"prior_prob":0.5,"observed":"pending","observed_prob":null}
+{"ts":"2026-04-14T16:00:00Z","edge":"direct engagement","action":"5 GitHub issue replies","cost_h":0.5,"prior_prob":0.3,"observed":"posted","observed_prob":null,"notes":"待ち"}
+{"ts":"2026-04-15T05:20:00Z","edge":"M1->M2 shortcut","action":"X post v1 original","cost_h":0.1,"prior_prob":0.05,"observed":"views=0 after 30min","observed_prob":0.0,"lesson":"6 followers base insufficient"}
+{"ts":"2026-04-15T07:30:00Z","edge":"M1->M2 shortcut","action":"X post v2 variant B","cost_h":0.1,"prior_prob":0.05,"observed":"views=0 after 15min","observed_prob":0.0,"lesson":"再確認:X単独では拡散しない"}
+{"ts":"2026-04-15T07:35:00Z","edge":"community discussion","action":"MCP spec Discussion #2579","cost_h":0.2,"prior_prob":0.15,"observed":"posted","observed_prob":null}
+{"ts":"2026-04-15T07:40:00Z","edge":"community discussion","action":"AutoGen Discussion #7585","cost_h":0.2,"prior_prob":0.15,"observed":"posted","observed_prob":null}
+{"ts":"2026-04-15T07:42:00Z","edge":"SEO content","action":"dev.to 977語記事 publish","cost_h":0.3,"prior_prob":0.25,"observed":"posted","observed_prob":null,"notes":"SEO蓄積、長期EV高"}
