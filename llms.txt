@@ -1,8 +1,8 @@
 # OZC
 
-> A claim-level trust infrastructure for agent-generated information.
-> On-chain (Base mainnet) shared ledger. Individuals allocate personal signal to claims they believe are true.
-> No authority, no currency exchange.
+> The bigger question OZC is one answer to: in an era where humans delegate to AI agents, who decides what information is trustworthy? OZC's hypothesis is that individuals themselves must hold the scrutiny criterion, and that a market mechanism can make the distribution of individual criteria visible. OZC is one tool implementing that hypothesis — a visualization of data reliability via individual commitment, not a final answer.
+>
+> Mechanism: on-chain (Base mainnet) shared ledger. Individuals allocate personal signal to claims they believe are true. No authority, no currency exchange.
 
 OZC is different from agent-level reputation systems (ERC-8004, MolTrust, Agent Trust Stack). Those bind trust to an agent's identity. OZC binds trust to each individual claim. Same agent, different claims, different market validations.
 

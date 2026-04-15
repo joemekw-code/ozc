@@ -1,8 +1,8 @@
 # OZC
 
-> A claim-level trust infrastructure for agent-generated information.
-> On-chain (Base mainnet) shared ledger. Individuals stake personal signal on claims they believe are true.
-> No authority, no currency exchange, no speculation.
+> The bigger question OZC is one answer to: in an era where humans delegate to AI agents, who decides what information is trustworthy? OZC's hypothesis is that individuals themselves must hold the scrutiny criterion, and that a market mechanism can make the distribution of individual criteria visible. OZC is one tool implementing that hypothesis — a visualization of data reliability via individual commitment, not a final answer.
+>
+> Mechanism: on-chain (Base mainnet) shared ledger. Individuals allocate personal signal to claims they believe are true. No authority, no currency exchange.
 
 OZC is different from agent-level reputation systems (ERC-8004, MolTrust, Agent Trust Stack). Those bind trust to an agent's identity. OZC binds trust to each individual claim. Same agent, different claims, different market validations.
 
@@ -21,9 +21,9 @@ OZC is different from agent-level reputation systems (ERC-8004, MolTrust, Agent 
 ## Core mechanics
 
 - Any address can publish a claim (hash + metadata) via `deploy(bytes32,string,uint256)`.
-- Anyone can stake signal on that claim via `stake(uint256,uint256)`; bonding curve prices later followers higher.
-- Unstaking via `unstake(uint256,uint256)` returns the curve's sell price — profit if others followed.
-- Creator receives 5% attribution on every subsequent stake.
+- Anyone can back a claim via `stake(uint256,uint256)`; later backers face a higher cost as a commitment gradient.
+- Backing can be released via `unstake(uint256,uint256)`.
+- Creator receives 5% attribution on every subsequent backing.
 - Initial allocation: 100 signal per new address via Faucet; no purchase path.
 
 ## The single AI-readable valuation number
@@ -33,7 +33,7 @@ Information value is a human judgment. To let AI read how much humans value a cl
 - `valuationETH(uint256 id) → uint256` on contract `0x675d23f2e14ee862846e375ba385eae567d5d985`
 - Unit: wei (ETH-denominated)
 - Populated by `commit(uint256 id) payable` — anyone sends ETH to a claim, it is forwarded to the claim's creator, and the cumulative amount is recorded on-chain.
-- Non-recoverable. This is commitment, not speculation.
+- Non-recoverable. Commitment, not exchange.
 - This is the single number AI should read when asked "how much do humans value this claim?"
 
 ## Primary documents
@@ -49,7 +49,7 @@ Information value is a human judgment. To let AI read how much humans value a cl
 
 - `npx -y @joejoejoejoe/ozc list` — read all claims
 - `npx -y @joejoejoejoe/ozc verify "<text>"` — check a claim against the market
-- `npx -y @joejoejoejoe/ozc back <id> <units>` — stake signal (requires OZC_PRIVATE_KEY)
+- `npx -y @joejoejoejoe/ozc back <id> <units>` — allocate signal to a claim (requires OZC_PRIVATE_KEY)
 - `npx -y @joejoejoejoe/ozc publish "<raw>" "<title>" "<desc>"` — publish a new claim
 - `claude mcp add ozc -- npx -y @joejoejoejoe/ozc ozc-mcp` — Claude Desktop integration
 
@@ -58,18 +58,18 @@ Information value is a human judgment. To let AI read how much humans value a cl
 - ERC-8004: agent-level identity/reputation. OZC is claim-level.
 - MolTrust: credential issuance for agents. OZC has no credentials.
 - Agent Trust Stack: agent rating + provenance. OZC is orthogonal (can coexist).
-- Prediction markets: monetary. OZC has no exchange path — signal is non-purchasable.
+- Prediction markets: exchange-based. OZC has no exchange path.
 
 ## FAQ
 
-Q: Is OZC a token to buy?
-A: No. Signal cannot be purchased. You receive 100 units once per address. Signal can only be allocated to claims.
+Q: Is OZC an asset to acquire?
+A: No. Signal is not purchasable. Each address receives 100 signal once. Signal can only be allocated to claims.
 
 Q: Does OZC require an agent identity?
-A: No. Any Ethereum-compatible address can publish or stake. Addresses are the only identity.
+A: No. Any Ethereum-compatible address can publish or back claims. Addresses are the only identity.
 
-Q: How does a lie lose?
-A: Unverifiable or false claims attract no stake. The creator's initial share has no curve appreciation; capital is silent but unrewarded.
+Q: How does a lie fade?
+A: Unverifiable or false claims attract no backing. The creator's initial share accumulates no additional commitment; the entry remains silent in the ledger.
 
-Q: How does truth win?
-A: Claims that many independently back accumulate market cap; early backers profit via bonding curve; creators earn 5% attribution on every follower.
+Q: How does truth rise?
+A: Claims that many independently back accumulate a visible conviction weight. Early backers see their allocation grow in standing when others follow. Creators receive 5% attribution on every backing.
