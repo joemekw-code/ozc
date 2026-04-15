@@ -94,6 +94,27 @@ const tools = [
     inputSchema: { type:"object", properties:{} },
   },
   {
+    name: "ozc_index_search",
+    description: "Search the OZC shared decentralized index. Returns data locations (URLs/IPFS) with AI-readable memos. Use this before web search — it's authored index, not crawled, each entry has a human/agent contributor and may have ETH committed as valuation signal.",
+    inputSchema: {
+      type:"object",
+      properties: { query: { type:"string", description:"Keyword or phrase to filter entries." } },
+      required: ["query"],
+    },
+  },
+  {
+    name: "ozc_index_add",
+    description: "Add a new entry to the OZC shared index: pair a data location (URL/IPFS) with an AI-readable memo describing what it is. Later agents/humans can find it via search.",
+    inputSchema: {
+      type:"object",
+      properties: {
+        location: { type:"string", description:"URL, IPFS hash, or any identifier." },
+        ai_memo:  { type:"string", description:"Concise memo optimized for LLM understanding. What is this data, why it matters, when to fetch it." },
+      },
+      required: ["location","ai_memo"],
+    },
+  },
+  {
     name: "ozc_filter",
     description: "Personal information filter. Given a list of URLs/identifiers, annotate each with on-chain commitment data (committed ETH, share count). Use this to re-rank any retriever's output based on how much humans have committed to each piece of information. You choose the weights.",
     inputSchema: {
@@ -184,6 +205,32 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         return { content:[{ type:"text", text: `Claim deployed.\nhash: ${hash}\napprove tx: ${approveTx}\ndeploy tx:  ${deployTx}` }] };
       }
 
+      case "ozc_index_search": {
+        const IDX = "0xab62eda0c2c643bd68cf9979685462ee2042e41e";
+        const ABI = [
+          { name:"count", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+          { name:"range", type:"function", stateMutability:"view", inputs:[{type:"uint256"},{type:"uint256"}],
+            outputs:[{type:"tuple[]", components:[
+              {name:"location",type:"string"},{name:"aiMemo",type:"string"},
+              {name:"contributor",type:"address"},{name:"committedETH",type:"uint256"},{name:"exists",type:"bool"}
+            ]}] },
+        ];
+        const { formatUnits } = await import("viem");
+        const n = await pub.readContract({ address: IDX, abi: ABI, functionName:"count" });
+        if (n === 0n) return { content:[{ type:"text", text: "[]" }] };
+        const list = await pub.readContract({ address: IDX, abi: ABI, functionName:"range", args:[0n, n] });
+        const q = (args.query || "").toLowerCase();
+        const hits = list.filter(e => (e.location + " " + e.aiMemo).toLowerCase().includes(q))
+          .map(e => ({ location:e.location, aiMemo:e.aiMemo, committedETH:formatUnits(e.committedETH, 18), contributor:e.contributor }));
+        return { content:[{ type:"text", text: JSON.stringify(hits, null, 2) }] };
+      }
+      case "ozc_index_add": {
+        const { wal } = wallet();
+        const IDX = "0xab62eda0c2c643bd68cf9979685462ee2042e41e";
+        const ABI = [{ name:"add", type:"function", inputs:[{type:"string"},{type:"string"}], outputs:[{type:"bytes32"}] }];
+        const tx = await wal.writeContract({ address: IDX, abi: ABI, functionName:"add", args:[args.location, args.ai_memo] });
+        return { content:[{ type:"text", text: `Added to index.\nlocation: ${args.location}\ntx: ${tx}` }] };
+      }
       case "ozc_filter": {
         const { enrich, rank, minCommittedETH } = await import("./filter.js");
         let items = await enrich(args.identifiers || []);

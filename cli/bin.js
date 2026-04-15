@@ -67,6 +67,69 @@ async function main() {
       console.table(out);
       return;
     }
+    case "index-add": {
+      const { wal } = signer();
+      const [location, ...memoParts] = args;
+      const aiMemo = memoParts.join(" ");
+      if (!location || !aiMemo) { console.error("Usage: ozc index-add <location> <ai_memo_text>"); process.exit(1); }
+      const IDX = "0xab62eda0c2c643bd68cf9979685462ee2042e41e";
+      const ABI = [{ name:"add", type:"function", inputs:[{type:"string"},{type:"string"}], outputs:[{type:"bytes32"}] }];
+      const tx = await wal.writeContract({ address: IDX, abi: ABI, functionName:"add", args:[location, aiMemo] });
+      console.log(`Indexed "${location}".  tx: ${tx}`);
+      return;
+    }
+    case "index-list": {
+      const IDX = "0xab62eda0c2c643bd68cf9979685462ee2042e41e";
+      const ABI = [
+        { name:"count", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+        { name:"range", type:"function", stateMutability:"view", inputs:[{type:"uint256"},{type:"uint256"}],
+          outputs:[{type:"tuple[]", components:[
+            {name:"location",type:"string"},{name:"aiMemo",type:"string"},
+            {name:"contributor",type:"address"},{name:"committedETH",type:"uint256"},{name:"exists",type:"bool"}
+          ]}] },
+      ];
+      const n = await pub.readContract({ address: IDX, abi: ABI, functionName:"count" });
+      if (n === 0n) { console.log("(empty)"); return; }
+      const list = await pub.readContract({ address: IDX, abi: ABI, functionName:"range", args:[0n, n] });
+      const out = list.map((e, i) => ({
+        i, location: e.location, aiMemo: e.aiMemo, contributor: e.contributor,
+        committedETH: formatUnits(e.committedETH, 18),
+      }));
+      console.log(JSON.stringify(out, null, 2));
+      return;
+    }
+    case "index-commit": {
+      const { wal } = signer();
+      const [location, eth] = args;
+      if (!location || !eth) { console.error("Usage: ozc index-commit <location> <eth_amount>"); process.exit(1); }
+      const { keccak256: kek, toBytes: tb } = await import("viem");
+      const key = kek(tb(location));
+      const IDX = "0xab62eda0c2c643bd68cf9979685462ee2042e41e";
+      const ABI = [{ name:"commit", type:"function", stateMutability:"payable", inputs:[{type:"bytes32"}], outputs:[] }];
+      const wei = parseUnits(eth, 18);
+      const tx = await wal.writeContract({ address: IDX, abi: ABI, functionName:"commit", args:[key], value: wei });
+      console.log(`Committed ${eth} ETH to "${location}".  tx: ${tx}`);
+      return;
+    }
+    case "index-search": {
+      const query = args.join(" ").toLowerCase();
+      const IDX = "0xab62eda0c2c643bd68cf9979685462ee2042e41e";
+      const ABI = [
+        { name:"count", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+        { name:"range", type:"function", stateMutability:"view", inputs:[{type:"uint256"},{type:"uint256"}],
+          outputs:[{type:"tuple[]", components:[
+            {name:"location",type:"string"},{name:"aiMemo",type:"string"},
+            {name:"contributor",type:"address"},{name:"committedETH",type:"uint256"},{name:"exists",type:"bool"}
+          ]}] },
+      ];
+      const n = await pub.readContract({ address: IDX, abi: ABI, functionName:"count" });
+      if (n === 0n) { console.log("(empty)"); return; }
+      const list = await pub.readContract({ address: IDX, abi: ABI, functionName:"range", args:[0n, n] });
+      const hits = list.filter(e => (e.location + " " + e.aiMemo).toLowerCase().includes(query))
+        .map((e, i) => ({ location:e.location, aiMemo:e.aiMemo, committedETH:formatUnits(e.committedETH, 18) }));
+      console.log(JSON.stringify(hits, null, 2));
+      return;
+    }
     case "boost": {
       // boost any URL or string identifier with ETH via URLValuation bonding curve
       const { wal } = signer();
