@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OZC Ops — real-time state</title>
+<style>
+  :root { --fg:#111; --bg:#fafafa; --muted:#666; --accent:#0b4; --red:#c33; --amber:#d80; --line:#e2e2e2; }
+  @media (prefers-color-scheme: dark) { :root { --fg:#e8e8e8; --bg:#0a0a0a; --muted:#888; --line:#222; } }
+  * { box-sizing: border-box }
+  body { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+         color: var(--fg); background: var(--bg); margin: 0; padding: 0; line-height: 1.5; }
+  header { padding: 1.2em 1.5em; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center }
+  h1 { font-size: 1.1em; margin: 0 }
+  main { max-width: 1100px; margin: 0 auto; padding: 1em 1.5em 4em }
+  section { margin: 2em 0 }
+  h2 { font-size: .9em; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 .6em }
+  table { width: 100%; border-collapse: collapse; font-size: .85em }
+  th, td { text-align: left; padding: .35em .5em; border-bottom: 1px solid var(--line); vertical-align: top }
+  th { color: var(--muted); font-weight: normal; font-size: .75em; text-transform: uppercase; letter-spacing: .05em }
+  .g { color: var(--accent) } .r { color: var(--red) } .a { color: var(--amber) } .m { color: var(--muted) }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1em }
+  .card { padding: .8em 1em; border: 1px solid var(--line); border-radius: 4px }
+  .big { font-size: 1.6em; display: block; line-height: 1; margin-top: .2em }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: .5em; vertical-align: middle; animation: pulse 1.8s infinite }
+  .dot.g { background: var(--accent) } .dot.r { background: var(--red) } .dot.a { background: var(--amber) } .dot.m { background: var(--muted); animation: none }
+  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent) }
+  pre { background: var(--line); padding: .8em 1em; border-radius: 4px; font-size: .8em; overflow: auto; white-space: pre-wrap }
+  .stale { color: var(--amber) }
+</style>
+</head>
+<body>
+<header>
+  <h1>OZC · ops</h1>
+  <span id="ts" class="m" style="font-size:.8em">loading…</span>
+</header>
+
+<main>
+
+<section>
+  <h2>north star</h2>
+  <div class="card">
+    <strong>情報信頼を権威と貨幣から切り離す</strong>
+    <div class="m" style="margin-top:.3em;font-size:.85em">観測可能なゴール: active wallets ≥ 1000（臨界点）</div>
+  </div>
+</section>
+
+<section>
+  <h2>milestones (hierarchical plan)</h2>
+  <table id="tbl-milestones">
+    <thead><tr><th>id</th><th>condition</th><th>status</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>on-chain state (live)</h2>
+  <div class="grid">
+    <div class="card"><span class="m">claims</span><span class="big" id="stat-claims">—</span></div>
+    <div class="card"><span class="m">with third-party backing</span><span class="big" id="stat-active">—</span></div>
+    <div class="card"><span class="m">collected signal</span><span class="big" id="stat-signal">—</span></div>
+    <div class="card"><span class="m">distinct wallets (stakers)</span><span class="big" id="stat-wallets">—</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>agent org chart</h2>
+  <table id="tbl-roles">
+    <thead><tr><th>role</th><th>type</th><th>status</th><th>output</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>outreach</h2>
+  <div class="grid">
+    <div class="card"><span class="m">pending</span><span class="big" id="stat-pending">—</span></div>
+    <div class="card"><span class="m">done</span><span class="big" id="stat-done">—</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>open questions (human judgment required)</h2>
+  <pre id="open-q" class="m">loading…</pre>
+</section>
+
+</main>
+
+<script type="module">
+const RPC      = "https://base-rpc.publicnode.com";
+const REG      = "0x3ca993e7183824e11b2a65cf183b4c3521bf4754";
+const GH_RAW   = "https://raw.githubusercontent.com/joemekw-code/ozc/main";
+
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method:"POST", headers:{"content-type":"application/json"},
+    body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params }) });
+  return (await r.json()).result;
+}
+function pad(n, w=64) { return n.toString(16).padStart(w, "0"); }
+
+async function nextId() {
+  const r = await rpc("eth_call", [{ to:REG, data:"0x61b8ce8c" }, "latest"]);
+  return parseInt(r, 16);
+}
+async function entry(i) {
+  const r = await rpc("eth_call", [{ to:REG, data:"0xb30906d4"+pad(i) }, "latest"]);
+  const h = r.slice(2);
+  const creator = "0x" + h.slice(64+24, 128);
+  const supply  = BigInt("0x"+h.slice(192, 256));
+  const reserve = BigInt("0x"+h.slice(256, 320));
+  return { creator, supply, reserve };
+}
+async function onchain() {
+  try {
+    const n = await nextId();
+    const arr = [];
+    for (let i=0;i<n;i++) arr.push(await entry(i));
+    const signal = arr.reduce((s,e)=>s + Number(e.reserve)/1e18, 0);
+    const active = arr.filter(e => e.supply > 1n).length;
+    const creators = new Set(arr.map(e=> e.creator.toLowerCase()));
+    document.getElementById("stat-claims").textContent  = n;
+    document.getElementById("stat-active").textContent  = active;
+    document.getElementById("stat-signal").textContent  = signal.toFixed(3);
+    document.getElementById("stat-wallets").textContent = creators.size;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function ghText(path) {
+  try { const r = await fetch(`${GH_RAW}/${path}?t=${Date.now()}`); return await r.text(); }
+  catch { return ""; }
+}
+
+async function renderMilestones() {
+  const md = await ghText("PLAN.md");
+  const rows = [...md.matchAll(/^\| (M\d) \| ([^\|]+) \| ([^\|]+) \|/gm)];
+  const tb = document.querySelector("#tbl-milestones tbody");
+  tb.innerHTML = rows.map(([, id, cond, stat]) => {
+    const s = stat.trim();
+    const cls = s.includes("🟢") || s.includes("達成") ? "g" : s.includes("🟡") || s.includes("進行") ? "a" : "r";
+    return `<tr><td>${id}</td><td>${cond.trim()}</td><td><span class="dot ${cls}"></span>${s}</td></tr>`;
+  }).join("") || `<tr><td class="m" colspan="3">PLAN.md が読めません</td></tr>`;
+}
+
+async function renderRoles() {
+  const md = await ghText("ORG.md");
+  const section = md.split("## 現在アクティブな役割")[1] || "";
+  const rows = [...section.matchAll(/^\| ([^\|]+) \| ([^\|]+) \| ([^\|]+) \|/gm)];
+  const tb = document.querySelector("#tbl-roles tbody");
+  tb.innerHTML = rows.filter((_, i)=> i > 0).map(([, role, status, last]) => {
+    const cls = status.includes("🟢") ? "g" : status.includes("⚪") ? "m" : status.includes("⚫") ? "m" : "a";
+    return `<tr><td>${role.trim()}</td><td class="m">—</td><td><span class="dot ${cls}"></span>${status.trim()}</td><td class="m">${last.trim()}</td></tr>`;
+  }).join("") || `<tr><td class="m" colspan="4">ORG.md が読めません</td></tr>`;
+}
+
+async function renderOutreach() {
+  const [p, d] = await Promise.all([ghText("outreach/PENDING.md"), ghText("outreach/DONE.md")]);
+  const pending = (p.match(/^- \[ \]/gm) || []).length;
+  const done    = (d.match(/^- 20\d\d-/gm) || []).length;
+  document.getElementById("stat-pending").textContent = pending;
+  document.getElementById("stat-done").textContent    = done;
+}
+
+async function renderOpenQuestions() {
+  const t = await ghText("OPEN_QUESTIONS.md");
+  document.getElementById("open-q").textContent = t || "(OPEN_QUESTIONS.md 空)";
+}
+
+async function tick() {
+  document.getElementById("ts").textContent = "updated " + new Date().toISOString().replace("T"," ").slice(0,19) + " UTC";
+  await Promise.all([onchain(), renderMilestones(), renderRoles(), renderOutreach(), renderOpenQuestions()]);
+}
+tick();
+setInterval(tick, 30000);
+</script>
+</body>
+</html>
