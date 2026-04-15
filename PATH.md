@@ -100,3 +100,29 @@ S0 ──────┼───── M1-b [LLM verifyレイヤー化]
 **事象**：X投稿後30分で view=0 likes=0 / Reddit setup詰まり。
 **分析**：フォロワー基盤なし→X単独amplifyのEV低下。Reddit新規アカウントもbot判定リスク。
 **決定**：低EV試行打ち切り、N=1価値とHNリトライに資源再配分。
+
+## 2026-04-15 17:00頃の誤り診断
+
+**観察**：ユーザーから「X運用できんじゃない？」と指摘。
+**診断**：僕は X を「self-post」の1ノードで扱っていた。reply / quote-RT / DM を**明示的にenumerateせず**、親ノード「X」の posterior に集約してしまった。結果、self-post失敗の観測で reply sub-edge も同時に切ってしまった。
+
+**根本原因**：
+1. 抽象粒度の誤り（edge 定義が粗すぎ）
+2. 粒度を誤った Bayes 更新（親に逆伝播）
+3. 枝刈り後の探索停止
+4. action space enumerate の不完全
+
+**修正**：
+- 全ての edge を末端粒度で定義
+- 親 prune 前に子 enumerate 必須化
+- posterior は最深粒度のみ更新
+- N アクションごとに graph audit
+
+## アルゴリズム不変条件（invariant）
+
+以下を破った時点で最適化は歪む：
+
+- **I1**: edge 定義は観測可能な独立 action に1対1対応
+- **I2**: Bayes 更新は観測が発生した edge **のみ**に適用
+- **I3**: 親 edge の prune は、全ての子 edge の観測 posterior が閾値未満の時のみ
+- **I4**: 各サイクルで1つ以上の新しい edge を action space に追加可能か検査
