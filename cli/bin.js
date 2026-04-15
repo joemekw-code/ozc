@@ -67,6 +67,14 @@ async function main() {
       console.table(out);
       return;
     }
+    case "timeline": {
+      const { timeline } = await import("./timeline.js");
+      const addr = args[0];
+      if (!addr) { console.error("Usage: ozc timeline <address>"); process.exit(1); }
+      const t = await timeline(addr);
+      console.log(JSON.stringify(t, null, 2));
+      return;
+    }
     case "verify": {
       const { verify } = await import("./verify.js");
       const claim = args.join(" ");
