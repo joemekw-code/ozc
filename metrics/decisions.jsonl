@@ -9,3 +9,5 @@
 {"ts":"2026-04-15T07:35:00Z","edge":"community discussion","action":"MCP spec Discussion #2579","cost_h":0.2,"prior_prob":0.15,"observed":"posted","observed_prob":null}
 {"ts":"2026-04-15T07:40:00Z","edge":"community discussion","action":"AutoGen Discussion #7585","cost_h":0.2,"prior_prob":0.15,"observed":"posted","observed_prob":null}
 {"ts":"2026-04-15T07:42:00Z","edge":"SEO content","action":"dev.to 977語記事 publish","cost_h":0.3,"prior_prob":0.25,"observed":"posted","observed_prob":null,"notes":"SEO蓄積、長期EV高"}
+{"ts":"2026-04-15T08:00:00Z","edge":"X reply to influencer","action":"ilblackdragon attestation reply","cost_h":0.15,"prior_prob":0.25,"observed":"posted","observed_prob":null}
+{"ts":"2026-04-15T08:01:00Z","edge":"X reply to influencer","action":"simonw knowledge-cutoff reply","cost_h":0.1,"prior_prob":0.25,"observed":"posted","observed_prob":null}
