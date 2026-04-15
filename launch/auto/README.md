@@ -11,6 +11,7 @@
 | **HN Show HN** | `hn.js` | HN_USER + HN_PASS | 2分 | 1発hitで24h 1-5k閲覧 |
 | **X / Twitter** | `x.js` | auth_token + ct0 cookie | 3分 | フォロワー＋インプレッション拡大 |
 | **Reddit (LocalLLaMA等)** | `reddit.js` | API app 作成＋user/pass | 5分 | カテゴリ別ターゲット拡散 |
+| **Farcaster** | `farcaster.js` | Neynar key + signer / Warpcast cookie / OP privkey | 3-10分 | crypto-native developer層に到達 |
 
 ## 実行方法（例）
 
@@ -63,6 +64,26 @@ API app の作り方：
 2. "create another app" → **script** type
 3. Redirect URI: `http://localhost:8080` （ダミーでOK）
 4. client_id と secret が表示される
+
+### Farcaster
+
+3経路サポート。優先度順:
+
+```bash
+# A. Neynar (推奨・無料tier): https://neynar.com で sign up → API key & signer
+FC_NEYNAR_API_KEY=... FC_NEYNAR_SIGNER_UUID=... node launch/auto/farcaster.js
+
+# B. Warpcast cookie (既存 Warpcast アカウントがある場合)
+FC_WARPCAST_COOKIE="<warpcast.com の cookie>" node launch/auto/farcaster.js
+
+# C. Onchain 登録 (wallet-native, OP ETH ~0.0003 必要)
+node launch/auto/farcaster.js --register --dry-run   # 確認
+FC_PRIVKEY=0x... node launch/auto/farcaster.js --register
+```
+
+現状 (2026-04): wallet `0xB8E5...1d0f` は FID 未登録、OP残高 0。
+FID 登録費は onchain price 実測 **~0.0000853 ETH (≒$0.30)** で、$5 ではない。
+ただし署名用 ETH (OP) を少量 bridge する必要あり。
 
 ## 倫理的に絶対しないこと
 
