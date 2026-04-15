@@ -1,5 +1,6 @@
 .env
 out/
 cache/
+node_modules/
 cli/node_modules/
 deployments.json
