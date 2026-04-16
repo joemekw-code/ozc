@@ -53,13 +53,17 @@ echo "[4/5] OZC Token + OzMarket デプロイ中..."
 
 OZC_ADDR=$(forge create src/OZCToken.sol:OZCToken \
   --constructor-args 100000000000000000000000000 $DEPLOYER_ADDR \
-  --private-key $DEPLOYER_KEY --rpc-url $RPC --json 2>/dev/null | jq -r '.deployedTo')
+  --private-key $DEPLOYER_KEY --rpc-url $RPC 2>&1 | grep "Deployed to:" | awk '{print $3}')
 echo "  OZC Token: $OZC_ADDR"
+
+if [ -z "$OZC_ADDR" ]; then echo "ERROR: OZC Token deploy failed"; kill $ANVIL_PID 2>/dev/null; exit 1; fi
 
 MKT_ADDR=$(forge create src/OzMarket.sol:OzMarket \
   --constructor-args $OZC_ADDR \
-  --private-key $DEPLOYER_KEY --rpc-url $RPC --json 2>/dev/null | jq -r '.deployedTo')
+  --private-key $DEPLOYER_KEY --rpc-url $RPC 2>&1 | grep "Deployed to:" | awk '{print $3}')
 echo "  OzMarket:  $MKT_ADDR"
+
+if [ -z "$MKT_ADDR" ]; then echo "ERROR: OzMarket deploy failed"; kill $ANVIL_PID 2>/dev/null; exit 1; fi
 
 # Approve
 cast send $OZC_ADDR "approve(address,uint256)" $MKT_ADDR 999999999000000000000000000 \
