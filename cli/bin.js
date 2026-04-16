@@ -67,6 +67,14 @@ async function main() {
       console.table(out);
       return;
     }
+    case "save": {
+      // shortcut: ozc save <url> [memo] → runs save.js
+      const { execSync } = await import("child_process");
+      const a = args.map(x => `"${x}"`).join(" ");
+      try { execSync(`node ${new URL("./save.js", import.meta.url).pathname} ${a}`, { stdio:"inherit", env: process.env }); }
+      catch (e) { process.exit(1); }
+      return;
+    }
     case "index-add": {
       const { wal } = signer();
       const [location, ...memoParts] = args;
