@@ -1,5 +1,6 @@
 # OZC
 
+[![SafeSkill 91/100](https://img.shields.io/badge/SafeSkill-91%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/joemekw-code-ozc)
 AIエージェントを部下として持ち始めた個人が、  
 **自分で情報を精査する基準**を持つための道具。
 
