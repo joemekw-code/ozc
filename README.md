@@ -1,7 +1,25 @@
 # OZC
 
-AIエージェントを部下として持ち始めた個人が、  
-**自分で情報を精査する基準**を持つための道具。
+**Your AI's information filter — owned by you, not by Google or OpenAI.**
+
+Add one file to your project. Your AI gets a trust layer that you control.
+
+```python
+from ozc_filter import OZCFilter
+f = OZCFilter()
+
+# Which of these sources should my AI trust?
+f.filter_urls(["https://bitcoin.org/bitcoin.pdf", "https://scam.example.com"])
+# → bitcoin.pdf: 55 OZC staked (trusted), scam.example.com: 0 (unknown)
+
+# Rerank RAG results by trust score
+reranked = f.rerank(my_retrieved_docs, key=lambda d: d["url"])
+
+# Add to any LLM as a system prompt
+prompt = f.system_prompt()  # → "Prefer sources with higher trust scores..."
+```
+
+**Why?** Every AI company decides what your AI can see. OZC lets *you* decide. The shared ledger shows what others trust (OZC staked), but you choose your own filter rules.
 
 ![OZC demo](./launch/demo.gif)
 
