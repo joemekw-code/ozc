@@ -58,34 +58,43 @@ RPC=http://localhost:9545
 # 4. Deploy OZC Token + OzMarket
 echo "[4/5] OZC Token + OzMarket デプロイ中..."
 
-# Use --json for reliable parsing (Foundry v1.5+ changed text output format)
-OZC_JSON=$(forge create src/OZCToken.sol:OZCToken \
+# Capture both stdout and stderr for debugging
+OZC_OUTPUT=$(forge create src/OZCToken.sol:OZCToken \
   --constructor-args 100000000000000000000000000 $DEPLOYER_ADDR \
-  --private-key $DEPLOYER_KEY --rpc-url $RPC --json 2>/dev/null) || true
+  --private-key $DEPLOYER_KEY --rpc-url $RPC 2>&1) || true
 
-OZC_ADDR=$(echo "$OZC_JSON" | jq -r '.deployedTo // empty')
+echo "  [debug] forge output: $OZC_OUTPUT" >&2
 
-# Fallback: try text parsing if --json fails
+# Try multiple parsing strategies
+OZC_ADDR=$(echo "$OZC_OUTPUT" | grep -i "deployed to" | grep -oE '0x[0-9a-fA-F]{40}')
 if [ -z "$OZC_ADDR" ]; then
-  OZC_ADDR=$(forge create src/OZCToken.sol:OZCToken \
-    --constructor-args 100000000000000000000000000 $DEPLOYER_ADDR \
-    --private-key $DEPLOYER_KEY --rpc-url $RPC 2>&1 | grep -i "deployed to" | awk '{print $NF}')
+  # Try JSON parse (some versions output JSON to stdout)
+  OZC_ADDR=$(echo "$OZC_OUTPUT" | jq -r '.deployedTo // empty' 2>/dev/null)
+fi
+if [ -z "$OZC_ADDR" ]; then
+  # Try: last 0x address in output
+  OZC_ADDR=$(echo "$OZC_OUTPUT" | grep -oE '0x[0-9a-fA-F]{40}' | tail -1)
 fi
 
 echo "  OZC Token: $OZC_ADDR"
-if [ -z "$OZC_ADDR" ]; then echo "ERROR: OZC Token deploy failed"; echo "$OZC_JSON"; kill $ANVIL_PID 2>/dev/null; exit 1; fi
+if [ -z "$OZC_ADDR" ]; then
+  echo "ERROR: OZC Token deploy failed"
+  echo "Full output:"
+  echo "$OZC_OUTPUT"
+  kill $ANVIL_PID 2>/dev/null
+  exit 1
+fi
 
-MKT_JSON=$(forge create src/OzMarket.sol:OzMarket \
+MKT_OUTPUT=$(forge create src/OzMarket.sol:OzMarket \
   --constructor-args $OZC_ADDR \
-  --private-key $DEPLOYER_KEY --rpc-url $RPC --json 2>/dev/null) || true
+  --private-key $DEPLOYER_KEY --rpc-url $RPC 2>&1) || true
 
-MKT_ADDR=$(echo "$MKT_JSON" | jq -r '.deployedTo // empty')
-
-# Fallback
+MKT_ADDR=$(echo "$MKT_OUTPUT" | grep -i "deployed to" | grep -oE '0x[0-9a-fA-F]{40}')
 if [ -z "$MKT_ADDR" ]; then
-  MKT_ADDR=$(forge create src/OzMarket.sol:OzMarket \
-    --constructor-args $OZC_ADDR \
-    --private-key $DEPLOYER_KEY --rpc-url $RPC 2>&1 | grep -i "deployed to" | awk '{print $NF}')
+  MKT_ADDR=$(echo "$MKT_OUTPUT" | jq -r '.deployedTo // empty' 2>/dev/null)
+fi
+if [ -z "$MKT_ADDR" ]; then
+  MKT_ADDR=$(echo "$MKT_OUTPUT" | grep -oE '0x[0-9a-fA-F]{40}' | tail -1)
 fi
 
 echo "  OzMarket:  $MKT_ADDR"
