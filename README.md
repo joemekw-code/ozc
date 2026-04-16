@@ -19,61 +19,57 @@ reranked = f.rerank(my_retrieved_docs, key=lambda d: d["url"])
 prompt = f.system_prompt()  # → "Prefer sources with higher trust scores..."
 ```
 
-**Why?** Every AI company decides what your AI can see. OZC lets *you* decide. The shared ledger shows what others trust (OZC staked), but you choose your own filter rules.
+**Why?** Every AI company decides what your AI can see. OZC lets *you* decide. The shared ledger shows what others value (OZC committed), but you choose your own filter rules.
 
 ![OZC demo](./launch/demo.gif)
 
 ---
 
-## 問い
+## The Question
 
-AIエージェントが人間の日常判断の相当部分を代替する時代に入った。  
-その時、AI が扱う情報を**誰が精査するのか**。
+We've entered an era where AI agents handle a significant portion of human daily decisions. So — **who decides what information is trustworthy?**
 
-従来の答えは、AI企業 / プラットフォーム / ファクトチェッカーといった中央集権の機関。  
-しかしそれは、情報を精査する権限をまた別の権威に預けることでしかない。
+The conventional answer: AI companies, platforms, fact-checkers — centralized authorities. But that just hands the power of information scrutiny to yet another authority.
 
-真の問いは： **個人が、自分の精査基準を持てるか**。
+The real question: **Can individuals hold their own criteria for evaluating information?**
 
-## 仮説
+## Hypothesis
 
-個人の判断を集合として可視化する仕組みがあれば、  
-個人は自分の基準を表明でき、他の個人の基準の分布を見て参考にできる。  
-「みんなの答え」ではなく、「誰が何を信じているかの分布」を可視化する。
+If individual judgments can be collectively visualized, each person can express their criteria and reference the distribution of others' criteria. Not "the crowd's answer" but "the distribution of who believes what."
 
-その仕組みとして、OZC は **市場性（個人が有限のリソースを主張に配分する）** を採用した。
+OZC adopts **market dynamics** as the mechanism — individuals allocate finite resources to claims they believe in.
 
-## OZC が試すこと
+## What OZC Tests
 
-- 誰でも主張を公開できる（hash + 概要で台帳に刻む）
-- 各個人は有限の signal を持ち、信じる主張に配分する
-- 支持の分布が時間とともに可視化される
-- 公開者には後続支持の 5% が attribution として還元される
-- 貨幣との交換路はない（signal は購入できない）
-- さらに、**AI が読む客観尺度** として、claim ごとに commit された ETH 累積額を on-chain に露出
+- Anyone can save a URL or claim to a shared on-chain index
+- Each person commits OZC (a non-purchasable allocation) to information they value
+- The distribution of commitments becomes visible over time
+- A bonding curve rewards early discoverers — later backers pay more
+- No external exchange path — OZC cannot be bought with other currencies
+- AI reads one number per entry: `totalBacked` — the collective conviction
 
-OZC 自体は結論ではない。  
-「個人が情報精査基準を持てるか」という問いに、市場性という1つの仮説で答えた道具です。
+OZC is not the answer. It's one tool testing one hypothesis: can market dynamics make individual information criteria visible?
 
 ---
 
-## 試す（3つの経路）
+## Try It (3 paths)
 
-### A. npx 1行（clone不要）
+### A. One-liner (no clone needed)
 
 ```bash
 npx -y @joejoejoejoe/ozc list
-npx -y @joejoejoejoe/ozc verify "<任意の主張>"
+npx -y @joejoejoejoe/ozc verify "<any claim>"
+npx -y @joejoejoejoe/ozc search "AI trust" --local ~/Documents
 ```
 
-### B. REST gateway（ChatGPT Actions / n8n / 等）
+### B. REST Gateway (ChatGPT Actions / n8n / etc.)
 
 ```bash
 OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc ozc-gateway
-# → http://localhost:8787  OpenAPIは /openapi.json
+# → http://localhost:8787  OpenAPI at /openapi.json
 ```
 
-### C. MCP サーバ（Claude Desktop / Cursor / Cline）
+### C. MCP Server (Claude Desktop / Cursor / Cline)
 
 ```json
 { "mcpServers": { "ozc": {
@@ -85,26 +81,44 @@ OZC_PRIVATE_KEY=0x... npx -y @joejoejoejoe/ozc ozc-gateway
 
 ---
 
-## 技術仕様
+## Contracts
 
-| コンポーネント | アドレス |
-|--------------|--------|
-| 主張レジストリ   | [`0x3ca993e7183824e11b2a65cf183b4c3521bf4754`](https://basescan.org/address/0x3ca993e7183824e11b2a65cf183b4c3521bf4754) |
-| signal 台帳       | [`0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144`](https://basescan.org/address/0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144) |
-| 初回配布          | [`0xea827C90a2ed12afcebBFaF5CBd577c10905222d`](https://basescan.org/address/0xea827C90a2ed12afcebBFaF5CBd577c10905222d) |
-| ETH commitment 層 | [`0x675d23f2e14ee862846e375ba385eae567d5d985`](https://basescan.org/address/0x675d23f2e14ee862846e375ba385eae567d5d985) |
+### OZC Chain (local devnet)
+- Chain ID: `420420`
+- Gas: effectively zero (OZC only, no ETH needed)
+- OzMarket: handles save/sell with per-entry bonding curve
 
-Chain: Base mainnet (8453)
+### Base Mainnet (production)
+
+| Component | Address |
+|-----------|---------|
+| OZC Token | [`0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144`](https://basescan.org/address/0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144) |
+| OzMarket | [`0xc1f93ecc3a40f28bb9cf001a85ca7477fe41a3d6`](https://basescan.org/address/0xc1f93ecc3a40f28bb9cf001a85ca7477fe41a3d6) |
+| OzIndexFinal | [`0x7e846cfe52c2c5118a1d7f132c3212a21500889f`](https://basescan.org/address/0x7e846cfe52c2c5118a1d7f132c3212a21500889f) |
 
 ---
 
-## ドキュメント
+## Documentation
 
-- [INTEGRATE.md](./INTEGRATE.md) — 既存エージェントへの統合（Python/JS/MCP/curl）
-- [AGENT.md](./AGENT.md) — エージェント運用者向け
-- [OPERATIONS.md](./OPERATIONS.md) — 自律運用の内部構造
-- [PATH.md](./PATH.md) — 最短経路の planning graph
-- [STATE.md](./STATE.md) — 現在のオンチェーン状態
+- [INTEGRATE.md](./INTEGRATE.md) — Integration guide (Python / JS / MCP / curl)
+- [AGENT.md](./AGENT.md) — Operator manual for autonomous agents
+- [USECASES.md](./USECASES.md) — Concrete use cases
+- [PATH.md](./PATH.md) — Hierarchical planning graph (Dijkstra-based optimization)
+
+---
+
+## Run Your Own OZC Chain
+
+```bash
+# Start local chain (GitHub Codespaces or any machine with Docker)
+anvil --chain-id 420420 --block-time 2 --gas-price 0 --base-fee 0 &
+
+# Deploy OZC Token + OzMarket
+bash scripts/deploy-local.sh
+
+# Save any URL
+cast send <MARKET_ADDR> "save(string,string,uint256)" "https://example.com" "description" 1 --from <ADDR> --unlocked
+```
 
 ---
 
@@ -114,10 +128,8 @@ Chain: Base mainnet (8453)
 claude mcp add ozc -- node /path/to/ozc/cli/mcp-server.js
 ```
 
-Read-only は `OZC_PRIVATE_KEY` なしで動く。  
-書き込み（back / publish）は wallet と少額の Base ETH が必要。
+Read-only works without `OZC_PRIVATE_KEY`. Write operations (save / sell) require a wallet.
 
 ---
 
-**OZCは答えではない。問いへの1つの仮説の実装。**  
-結果は市場の分布として見える。同意できない時は、自分で別の仮説を実装してください。
+**OZC is not the answer. It's one hypothesis, implemented. The market's distribution shows the result. If you disagree, build your own.**
