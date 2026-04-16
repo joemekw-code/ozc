@@ -1,0 +1,382 @@
+[
+  {
+    "name": "BondingCurve.sol",
+    "path": "src/BondingCurve.sol",
+    "ext": ".sol",
+    "size": 1162,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice Linear bonding curve: price = BASE + SLOPE * supply /// Simple, auditable, easy ",
+    "x": -0.1508138228987879,
+    "y": -0.007521001390200284,
+    "z": -0.14794963972404288
+  },
+  {
+    "name": "CapacityMarket.sol",
+    "path": "src/CapacityMarket.sol",
+    "ext": ".sol",
+    "size": 2720,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface ICapacityToken {     function transferFrom(address, address, uint256) external ret",
+    "x": -0.3879191496847476,
+    "y": 0.0094333280921928,
+    "z": -0.02014947764815782
+  },
+  {
+    "name": "ClaimValuation.sol",
+    "path": "src/ClaimValuation.sol",
+    "ext": ".sol",
+    "size": 1850,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice ETH-denominated valuation layer for OZC claims. /// Anyone can commit ETH to a c",
+    "x": -0.3516618832961355,
+    "y": 0.03441237479021557,
+    "z": 0.03188238473610388
+  },
+  {
+    "name": "DataRegistry.sol",
+    "path": "src/DataRegistry.sol",
+    "ext": ".sol",
+    "size": 3720,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  import {BondingCurve} from \"./BondingCurve.sol\";  interface IERC20 {     function transferFr",
+    "x": -0.5035655775593295,
+    "y": 0.04991132797129787,
+    "z": -0.015379574790509295
+  },
+  {
+    "name": "DataRegistryV2.sol",
+    "path": "src/DataRegistryV2.sol",
+    "ext": ".sol",
+    "size": 4201,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  import {BondingCurve} from \"./BondingCurve.sol\";  interface IRegistryV2Token {     function ",
+    "x": -0.48735830400940966,
+    "y": 0.03765861487894193,
+    "z": -0.0517394179940512
+  },
+  {
+    "name": "OZCFaucet.sol",
+    "path": "src/OZCFaucet.sol",
+    "ext": ".sol",
+    "size": 1009,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IFaucetToken {     function transfer(address, uint256) external returns (bool);   ",
+    "x": -0.4764083569680333,
+    "y": 0.009063059383352792,
+    "z": -0.06283011119999185
+  },
+  {
+    "name": "OZCToken.sol",
+    "path": "src/OZCToken.sol",
+    "ext": ".sol",
+    "size": 1687,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  contract OZCToken {     string public constant name = \"OZC\";     string public constant symb",
+    "x": -0.4777048844070113,
+    "y": 0.021634197738353646,
+    "z": -0.029204775662612686
+  },
+  {
+    "name": "OzIndex.sol",
+    "path": "src/OzIndex.sol",
+    "ext": ".sol",
+    "size": 2935,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice Shared decentralized index. Everyone holds the same view. /// Each entry records",
+    "x": -0.4525280762281123,
+    "y": 0.04412522638039673,
+    "z": 0.27587838609252296
+  },
+  {
+    "name": "OzIndexFinal.sol",
+    "path": "src/OzIndexFinal.sol",
+    "ext": ".sol",
+    "size": 5841,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IFinalToken {     function transferFrom(address, address, uint256) external return",
+    "x": -0.6007766926976236,
+    "y": 0.04420083553913114,
+    "z": 0.2517080995073367
+  },
+  {
+    "name": "OzIndexV2.sol",
+    "path": "src/OzIndexV2.sol",
+    "ext": ".sol",
+    "size": 4130,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IOZC20 {     function transferFrom(address, address, uint256) external returns (bo",
+    "x": -0.5049726328923914,
+    "y": 0.044905661819680094,
+    "z": 0.27576563803356674
+  },
+  {
+    "name": "OzIndexV3.sol",
+    "path": "src/OzIndexV3.sol",
+    "ext": ".sol",
+    "size": 5901,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IV3Token {     function transferFrom(address, address, uint256) external returns (",
+    "x": -0.55618514480525,
+    "y": 0.03608144118791323,
+    "z": 0.23865543030140046
+  },
+  {
+    "name": "SponsoredFaucet.sol",
+    "path": "src/SponsoredFaucet.sol",
+    "ext": ".sol",
+    "size": 1596,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface ISpToken {     function transfer(address, uint256) external returns (bool);     fu",
+    "x": -0.3399715630438736,
+    "y": 0.013878851297876752,
+    "z": -0.09458529836557336
+  },
+  {
+    "name": "URLValuation.sol",
+    "path": "src/URLValuation.sol",
+    "ext": ".sol",
+    "size": 3945,
+    "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice URL-level (or any identifier-level) valuation. /// Anyone can commit ETH to any ",
+    "x": -0.4923832879023217,
+    "y": 0.0045237049062970035,
+    "z": -0.021240639958498845
+  },
+  {
+    "name": "bin.js",
+    "path": "cli/bin.js",
+    "ext": ".js",
+    "size": 16722,
+    "preview": "#!/usr/bin/env node // OZC unified CLI. // Usage: //   npx github:joemekw-code/ozc list //   npx github:joemekw-code/ozc info <id> //   npx github:joe",
+    "x": 0.4050808242349926,
+    "y": 0.4633821040816969,
+    "z": 0.3303884398534905
+  },
+  {
+    "name": "embed.js",
+    "path": "cli/embed.js",
+    "ext": ".js",
+    "size": 6790,
+    "preview": "#!/usr/bin/env node // `ozc embed <dir> [<dir2>...]` → TF-IDF vectorize local files → PCA to 3D → output JSON // Output: docs/embed-data.json — consum",
+    "x": 0.2817542781861555,
+    "y": 0.02691706076563138,
+    "z": -0.47579118131363113
+  },
+  {
+    "name": "filter.js",
+    "path": "cli/filter.js",
+    "ext": ".js",
+    "size": 4478,
+    "preview": "#!/usr/bin/env node // OZC filter primitives — personal information filter for any AI / agent / RAG pipeline. // // Pattern: give us a list of URLs (o",
+    "x": 0.3213389053025215,
+    "y": 0.2923756146372716,
+    "z": 0.16377074451546328
+  },
+  {
+    "name": "gateway.js",
+    "path": "cli/gateway.js",
+    "ext": ".js",
+    "size": 11365,
+    "preview": "#!/usr/bin/env node // OZC HTTP Gateway — exposes OZC as a zero-dependency REST API. // Any agent platform that can POST JSON (ChatGPT Actions, n8n, Z",
+    "x": 0.3578528943648196,
+    "y": 0.38606330244801546,
+    "z": 0.30131126903145533
+  },
+  {
+    "name": "index.js",
+    "path": "cli/index.js",
+    "ext": ".js",
+    "size": 2185,
+    "preview": "#!/usr/bin/env node // OZC Indexer — outputs all data entries as JSON for any agent to consume. // Usage: node index.js  (no args, no setup)  import {",
+    "x": 0.3902236452179622,
+    "y": 0.43633405675277614,
+    "z": 0.26251313065711296
+  },
+  {
+    "name": "mcp-server.js",
+    "path": "cli/mcp-server.js",
+    "ext": ".js",
+    "size": 14340,
+    "preview": "#!/usr/bin/env node // OZC MCP Server — drop-in tool layer for Claude Desktop / Cursor / Cline / any MCP client. // Launch: node mcp-server.js  (regis",
+    "x": 0.37450461473878655,
+    "y": 0.46187489621527045,
+    "z": 0.35907562750568794
+  },
+  {
+    "name": "optimize.js",
+    "path": "cli/optimize.js",
+    "ext": ".js",
+    "size": 2787,
+    "preview": "#!/usr/bin/env node // 最適化関数の定量化。 // `metrics/decisions.jsonl` を読んで、edge別に prior vs observed の履歴を集計。 // 未来の意思決定で Bayes 更新に使う posterior を返す。  import { ",
+    "x": 0.11769827184052004,
+    "y": 0.02752822105757687,
+    "z": -0.32342951554883126
+  },
+  {
+    "name": "ozc.js",
+    "path": "cli/ozc.js",
+    "ext": ".js",
+    "size": 8609,
+    "preview": "#!/usr/bin/env node import { createPublicClient, createWalletClient, http, keccak256, toBytes, parseUnits, formatUnits } from \"viem\"; import { private",
+    "x": 0.3291050588104005,
+    "y": 0.41836738014644936,
+    "z": 0.26452237532827144
+  },
+  {
+    "name": "ozc_filter.py",
+    "path": "cli/ozc_filter.py",
+    "ext": ".py",
+    "size": 6413,
+    "preview": "\"\"\" OZC Filter — Personal information trust layer for any AI/agent.  Drop this file into your project. No pip install needed.  Usage:     from ozc_fil",
+    "x": 0.03664298895660774,
+    "y": -0.06232870174913497,
+    "z": -0.25903965795108125
+  },
+  {
+    "name": "package-lock.json",
+    "path": "cli/package-lock.json",
+    "ext": ".json",
+    "size": 47757,
+    "preview": "{   \"name\": \"ozc-cli\",   \"version\": \"0.1.0\",   \"lockfileVersion\": 3,   \"requires\": true,   \"packages\": {     \"\": {       \"name\": \"ozc-cli\",       \"ver",
+    "x": 0.037606354075834875,
+    "y": -0.015863832263941415,
+    "z": -0.21860472868200237
+  },
+  {
+    "name": "package.json",
+    "path": "cli/package.json",
+    "ext": ".json",
+    "size": 680,
+    "preview": "{   \"name\": \"ozc-mcp\",   \"version\": \"0.1.0\",   \"description\": \"OZC MCP Server — trust infrastructure for agent-generated information. Stake credibilit",
+    "x": 0.04369156212120602,
+    "y": -0.05308260017176436,
+    "z": -0.24702498614129728
+  },
+  {
+    "name": "rag-status.js",
+    "path": "cli/rag-status.js",
+    "ext": ".js",
+    "size": 2419,
+    "preview": "#!/usr/bin/env node // `ozc rag-status [dir]` — show what's in your local RAG (file inventory) // `ozc rag-status ~/Documents ~/notes` // // Outputs: ",
+    "x": 0.20242407614311633,
+    "y": 0.007013678642380186,
+    "z": -0.5337001634437212
+  },
+  {
+    "name": "search.js",
+    "path": "cli/search.js",
+    "ext": ".js",
+    "size": 4659,
+    "preview": "#!/usr/bin/env node // `ozc search \"<query>\"` — personal search combining: //   1. On-chain OzIndex (global, priced by conviction) //   2. Local files",
+    "x": 0.2932767937548676,
+    "y": 0.20085333289955662,
+    "z": -0.2203519989831759
+  },
+  {
+    "name": "timeline.js",
+    "path": "cli/timeline.js",
+    "ext": ".js",
+    "size": 5552,
+    "preview": "#!/usr/bin/env node // `ozc timeline <address>` — show that wallet's full OZC history in time order. // N=1 value: even with no other users, your own ",
+    "x": 0.17835090338052786,
+    "y": 0.12123821473694012,
+    "z": -0.05201820799251167
+  },
+  {
+    "name": "verify.js",
+    "path": "cli/verify.js",
+    "ext": ".js",
+    "size": 2625,
+    "preview": "#!/usr/bin/env node // `ozc verify \"<claim>\"` — check if a claim is already on OZC, show its conviction. // Used by agents BEFORE they assert a factua",
+    "x": 0.38597092070001915,
+    "y": 0.31519396976564207,
+    "z": 0.07187224028180397
+  },
+  {
+    "name": "watch.js",
+    "path": "cli/watch.js",
+    "ext": ".js",
+    "size": 2050,
+    "preview": "#!/usr/bin/env node // Watch OZC activity: new entries, new backings, new wallets receiving signal. // Usage: node watch.js  (prints events as they ha",
+    "x": 0.1306914855681453,
+    "y": 0.10710641959508238,
+    "z": -0.11506422001124338
+  },
+  {
+    "name": "x-metrics.js",
+    "path": "cli/x-metrics.js",
+    "ext": ".js",
+    "size": 4986,
+    "preview": "#!/usr/bin/env node // X (Twitter) engagement metrics collector // // 我々のXアカウント profile にアクセスし、最新ピン留め or 直近投稿の // engagement (views / likes / retweets",
+    "x": 0.2885516684921503,
+    "y": 0.06763951914965417,
+    "z": -0.22991022801016742
+  },
+  {
+    "name": "x-watch.js",
+    "path": "cli/x-watch.js",
+    "ext": ".js",
+    "size": 1027,
+    "preview": "#!/usr/bin/env node // X engagement watch loop: 30分ごとに cli/x-metrics.js を実行する。 // // 実行: //   X_COOKIE_AUTH_TOKEN=... X_COOKIE_CT0=... node cli/x-watc",
+    "x": 0.23647369341756855,
+    "y": 0.009667471066429031,
+    "z": -0.3337770361631386
+  },
+  {
+    "name": "explore.html",
+    "path": "docs/explore.html",
+    "ext": ".html",
+    "size": 5741,
+    "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC · 3D D",
+    "x": 0.26430116617935523,
+    "y": -0.6216610929050974,
+    "z": 0.08637173472170502
+  },
+  {
+    "name": "index.html",
+    "path": "docs/index.html",
+    "ext": ".html",
+    "size": 7690,
+    "preview": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\"> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"> <title>OZC — Trust ",
+    "x": 0.23705004555997064,
+    "y": -0.7316594580522489,
+    "z": 0.2139119058710376
+  },
+  {
+    "name": "leaderboard.html",
+    "path": "docs/leaderboard.html",
+    "ext": ".html",
+    "size": 7880,
+    "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC · 情報ラン",
+    "x": 0.30808149449004396,
+    "y": -0.7137832232080568,
+    "z": 0.2579136590086346
+  },
+  {
+    "name": "llms.txt",
+    "path": "docs/llms.txt",
+    "ext": ".txt",
+    "size": 4523,
+    "preview": "# OZC  > The bigger question OZC is one answer to: in an era where humans delegate to AI agents, who decides what information is trustworthy? OZC's hy",
+    "x": -0.021890266015102557,
+    "y": -0.03244765648234942,
+    "z": -0.16433135445502023
+  },
+  {
+    "name": "me.html",
+    "path": "docs/me.html",
+    "ext": ".html",
+    "size": 9225,
+    "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC · my t",
+    "x": 0.30085205942346016,
+    "y": -0.6468581208800668,
+    "z": 0.23137708147424188
+  },
+  {
+    "name": "ops.html",
+    "path": "docs/ops.html",
+    "ext": ".html",
+    "size": 13470,
+    "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC 運用ダッシュ",
+    "x": 0.3089897363823755,
+    "y": -0.7350455831540573,
+    "z": 0.23953582415167146
+  },
+  {
+    "name": "vercel.json",
+    "path": "docs/vercel.json",
+    "ext": ".json",
+    "size": 50,
+    "preview": "{   \"cleanUrls\": true,   \"trailingSlash\": false } ",
+    "x": -0.026373798933272994,
+    "y": -0.07113259568910281,
+    "z": -0.24033175703224607
+  }
+]

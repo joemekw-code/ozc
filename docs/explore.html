@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OZC · 3D Data Explorer</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { font-family: ui-monospace, "SF Mono", Menlo, monospace; background:#0a0a0a; color:#eaeaea; overflow:hidden }
+  #info { position:fixed; top:12px; left:16px; z-index:10; font-size:12px; color:#888; pointer-events:none }
+  #detail { position:fixed; bottom:0; left:0; right:0; z-index:10; background:rgba(10,10,10,0.95);
+            border-top:1px solid #222; padding:12px 16px; font-size:12px; display:none; max-height:40vh; overflow:auto }
+  #detail .name { color:#0b4; font-size:14px; font-weight:bold }
+  #detail .path { color:#888; margin-top:2px }
+  #detail .preview { color:#aaa; margin-top:6px; white-space:pre-wrap; max-height:200px; overflow:auto }
+  canvas { display:block }
+  #loading { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px }
+  #controls { position:fixed; top:12px; right:16px; z-index:10; font-size:11px; color:#666 }
+  #controls input { width:220px }
+</style>
+</head>
+<body>
+<div id="info">
+  <div>OZC · 3D Data Explorer</div>
+  <div id="stats">loading...</div>
+</div>
+<div id="controls">
+  <div>Search: <input id="filter" type="text" placeholder="type to filter..." style="background:#111;color:#eee;border:1px solid #333;padding:3px 6px;font-family:inherit;border-radius:3px"></div>
+  <div style="margin-top:4px;color:#444">drag=rotate · scroll=zoom · click=inspect</div>
+</div>
+<div id="loading">generating 3D view...</div>
+<div id="detail">
+  <div class="name" id="d-name"></div>
+  <div class="path" id="d-path"></div>
+  <div class="preview" id="d-preview"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+let DATA = [];
+let scene, camera, renderer, controls, points, raycaster, mouse;
+const EXT_COLORS = {
+  ".sol":"#f0c040",".js":"#50c878",".ts":"#3080d0",".py":"#4090f0",
+  ".md":"#e8e8e8",".txt":"#aaa",".html":"#f08040",".json":"#d060d0",
+  ".yml":"#90a0b0",".yaml":"#90a0b0",".csv":"#60d0d0",".toml":"#c0a060",
+};
+
+async function load() {
+  try {
+    const r = await fetch("embed-data.json?t="+Date.now());
+    DATA = await r.json();
+  } catch {
+    document.getElementById("loading").textContent = "embed-data.json not found. Run: node cli/embed.js <your-dirs>";
+    return;
+  }
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("stats").textContent = `${DATA.length} files · drag to rotate`;
+  init3D();
+}
+
+function init3D() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.01, 100);
+  camera.position.set(1.5, 1.2, 1.5);
+  renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setClearColor(0x0a0a0a);
+  document.body.appendChild(renderer.domElement);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  raycaster = new THREE.Raycaster();
+  raycaster.params.Points.threshold = 0.04;
+  mouse = new THREE.Vector2();
+
+  buildPoints(DATA);
+
+  // axes
+  const axes = new THREE.AxesHelper(0.5);
+  axes.position.set(-1,-1,-1);
+  scene.add(axes);
+
+  window.addEventListener("resize", () => {
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  renderer.domElement.addEventListener("click", onClick);
+  document.getElementById("filter").addEventListener("input", onFilter);
+
+  animate();
+}
+
+function buildPoints(data) {
+  if (points) scene.remove(points);
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(data.length * 3);
+  const col = new Float32Array(data.length * 3);
+  const sizes = new Float32Array(data.length);
+  for (let i = 0; i < data.length; i++) {
+    pos[i*3]   = data[i].x || 0;
+    pos[i*3+1] = data[i].y || 0;
+    pos[i*3+2] = data[i].z || 0;
+    const c = new THREE.Color(EXT_COLORS[data[i].ext] || "#888");
+    col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
+    sizes[i] = Math.min(Math.max(data[i].size / 5000, 3), 15);
+  }
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  const mat = new THREE.PointsMaterial({ size:0.04, vertexColors:true, sizeAttenuation:true });
+  points = new THREE.Points(geo, mat);
+  scene.add(points);
+}
+
+function onClick(e) {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObject(points);
+  if (hits.length) {
+    const idx = hits[0].index;
+    const d = DATA[idx];
+    document.getElementById("d-name").textContent = d.name;
+    document.getElementById("d-path").textContent = d.path;
+    document.getElementById("d-preview").textContent = d.preview;
+    document.getElementById("detail").style.display = "";
+  } else {
+    document.getElementById("detail").style.display = "none";
+  }
+}
+
+function onFilter() {
+  const q = document.getElementById("filter").value.toLowerCase();
+  const filtered = q ? DATA.filter(d => (d.name + " " + d.preview).toLowerCase().includes(q)) : DATA;
+  buildPoints(filtered);
+  document.getElementById("stats").textContent = `${filtered.length}/${DATA.length} files`;
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+load();
+</script>
+</body>
+</html>
