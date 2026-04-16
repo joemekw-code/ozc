@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OZC Universe — 情報 × 意味 × 価格</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { font-family: ui-monospace, "SF Mono", Menlo, monospace; background:#050510; color:#eee; overflow:hidden }
+  canvas { display:block }
+  #hud { position:fixed; top:12px; left:16px; z-index:10; font-size:11px; color:#888; pointer-events:none }
+  #hud h1 { font-size:14px; color:#aaa; margin-bottom:4px }
+  #detail { position:fixed; bottom:0; left:0; right:0; z-index:10; background:rgba(5,5,16,0.95);
+            border-top:1px solid #222; padding:14px 18px; display:none; font-size:13px }
+  #detail .title { color:#0fa; font-size:16px; font-weight:bold }
+  #detail .url { color:#08f; margin:4px 0; word-break:break-all; cursor:pointer; text-decoration:underline }
+  #detail .memo { color:#aaa; margin:6px 0; line-height:1.5 }
+  #detail .price { color:#ff0; font-size:18px; font-weight:bold }
+  #legend { position:fixed; bottom:12px; right:16px; z-index:10; font-size:10px; color:#666 }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; vertical-align:middle }
+</style>
+</head>
+<body>
+<div id="hud">
+  <h1>OZC Universe</h1>
+  <div id="stats">loading...</div>
+  <div style="margin-top:4px">位置=意味の近さ ／ 大きさ=価格 ／ クリック=詳細</div>
+</div>
+<div id="detail">
+  <div class="title" id="d-title"></div>
+  <div class="url" id="d-url" onclick="window.open(this.textContent,'_blank')"></div>
+  <div class="memo" id="d-memo"></div>
+  <div class="price" id="d-price"></div>
+</div>
+<div id="legend">
+  <span class="dot" style="background:#0fa"></span>記事/docs
+  <span class="dot" style="background:#f0a"></span>音楽/動画
+  <span class="dot" style="background:#0af"></span>コード/技術
+  <span class="dot" style="background:#fa0"></span>SNS/投稿
+  <span class="dot" style="background:#aaa"></span>その他
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script type="module">
+import { keccak256, toBytes } from "https://esm.sh/viem@2.47.17";
+
+const RPC = "https://base-rpc.publicnode.com";
+const IDX = "0x7e846cfe52c2c5118a1d7f132c3212a21500889f";
+
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method:"POST", headers:{"content-type":"application/json"},
+    body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params }) });
+  return (await r.json()).result;
+}
+function pad(n, w=64) { return BigInt(n).toString(16).padStart(w, "0"); }
+
+async function fetchEntries() {
+  const countHex = await rpc("eth_call", [{ to:IDX, data:"0x06661abd" }, "latest"]); // count()
+  const count = parseInt(countHex, 16);
+  if (count === 0) return [];
+
+  // range(0, count) — selector 0x6d010a63 (precomputed)
+  const data = "0x27d39bcc" + pad(0) + pad(count);
+  const raw = await rpc("eth_call", [{ to:IDX, data }, "latest"]);
+  // Manually decode array of Entry structs is complex; let's fetch one by one
+  const entries = [];
+  for (let i = 0; i < count; i++) {
+    const keyData = "0x" + "e57816c1" + pad(i); // keys(uint256)
+    const keyHex = await rpc("eth_call", [{ to:IDX, data:keyData }, "latest"]);
+    const entryData = "0xb30906d4" + keyHex.slice(2); // entries(bytes32)
+    const entryHex = await rpc("eth_call", [{ to:IDX, data:entryData }, "latest"]);
+    const h = entryHex.slice(2);
+    // Entry: location(string), aiMemo(string), owner(address), lockedOZC(uint256), totalBacked(uint256), listPriceOZC(uint256), exists(bool)
+    // Decode dynamic strings is complex in raw hex. Use offset parsing.
+    try {
+      const locOff   = parseInt(h.slice(0, 64), 16) * 2;
+      const memoOff  = parseInt(h.slice(64, 128), 16) * 2;
+      const owner    = "0x" + h.slice(128+24, 192);
+      const locked   = BigInt("0x" + h.slice(192, 256));
+      const backed   = BigInt("0x" + h.slice(256, 320));
+      const listP    = BigInt("0x" + h.slice(320, 384));
+      const exists   = parseInt(h.slice(384, 448), 16);
+
+      function decStr(off) {
+        const len = parseInt(h.slice(off, off+64), 16) * 2;
+        const hex = h.slice(off+64, off+64+len);
+        try { return decodeURIComponent([...hex.match(/.{1,2}/g)].map(b=>"%"+b).join("")); }
+        catch { return ""; }
+      }
+      if (!exists) continue;
+      entries.push({
+        location: decStr(locOff),
+        memo: decStr(memoOff),
+        owner,
+        backed: Number(backed) / 1e18,
+        locked: Number(locked) / 1e18,
+      });
+    } catch (e) { console.error("parse error entry", i, e); }
+  }
+  return entries;
+}
+
+// ── simple tokenize + TF-IDF + PCA (same logic as embed.js, inline) ──
+function tokenize(s) { return s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, " ").split(/\s+/).filter(t => t.length > 1); }
+
+function embed3D(entries) {
+  const docs = entries.map(e => tokenize(e.location + " " + e.memo));
+  const df = {};
+  for (const d of docs) { const u = new Set(d); for (const t of u) df[t] = (df[t]||0)+1; }
+  const N = docs.length;
+  const vocab = Object.entries(df).filter(([,c]) => c >= 1 && c < N).sort((a,b)=>b[1]-a[1]).slice(0, 200).map(([t])=>t);
+  const vi = Object.fromEntries(vocab.map((t,i)=>[t,i]));
+  const D = vocab.length || 1;
+
+  const vecs = docs.map(d => {
+    const tf = {};
+    for (const t of d) if (vi[t] !== undefined) tf[t] = (tf[t]||0)+1;
+    const v = new Float64Array(D);
+    for (const [t,c] of Object.entries(tf)) v[vi[t]] = c * Math.log(N / (df[t]||1));
+    let n = 0; for (let i=0;i<D;i++) n += v[i]*v[i]; n = Math.sqrt(n)||1;
+    for (let i=0;i<D;i++) v[i] /= n;
+    return v;
+  });
+
+  // PCA
+  const mean = new Float64Array(D);
+  for (const v of vecs) for (let i=0;i<D;i++) mean[i]+=v[i]/N;
+  const cent = vecs.map(v => { const c=new Float64Array(D); for(let i=0;i<D;i++) c[i]=v[i]-mean[i]; return c; });
+
+  function powerIter(mat) {
+    const d=mat[0].length; let pc=new Float64Array(d);
+    for(let i=0;i<d;i++) pc[i]=Math.random();
+    for(let it=0;it<50;it++){
+      const nx=new Float64Array(d);
+      for(const r of mat){let dot=0;for(let i=0;i<d;i++) dot+=r[i]*pc[i]; for(let i=0;i<d;i++) nx[i]+=dot*r[i];}
+      let n=0;for(let i=0;i<d;i++) n+=nx[i]*nx[i]; n=Math.sqrt(n)||1;
+      for(let i=0;i<d;i++) pc[i]=nx[i]/n;
+    }
+    return pc;
+  }
+  function proj(mat,pc){return mat.map(r=>{let s=0;for(let i=0;i<r.length;i++) s+=r[i]*pc[i];return s;});}
+  function defl(mat,pc){return mat.map(r=>{let d=0;for(let i=0;i<r.length;i++) d+=r[i]*pc[i]; const o=new Float64Array(r.length);for(let i=0;i<r.length;i++) o[i]=r[i]-d*pc[i]; return o;});}
+
+  let m = cent; const coords=[[],[],[]];
+  for(let c=0;c<3;c++){const pc=powerIter(m);coords[c]=proj(m,pc);m=defl(m,pc);}
+  return entries.map((_,i)=>({x:coords[0][i]||0, y:coords[1][i]||0, z:coords[2][i]||0}));
+}
+
+function guessColor(loc, memo) {
+  const s = (loc + " " + memo).toLowerCase();
+  if (/youtube|spotify|music|song|video|mp3|soundcloud/.test(s)) return 0xff00aa;
+  if (/github|npm|pypi|code|solidity|\.sol|\.js|\.py/.test(s)) return 0x00aaff;
+  if (/twitter|x\.com|mastodon|farcaster|sns/.test(s)) return 0xffaa00;
+  if (/arxiv|paper|research|doc|blog|article/.test(s)) return 0x00ffaa;
+  return 0xaaaaaa;
+}
+
+// ── 3D scene ──
+let scene, camera, renderer, controls, points, DATA;
+
+async function main() {
+  DATA = await fetchEntries();
+  if (!DATA.length) { document.getElementById("stats").textContent = "index is empty"; return; }
+  const pos3d = embed3D(DATA);
+  for (let i = 0; i < DATA.length; i++) { DATA[i].x = pos3d[i].x; DATA[i].y = pos3d[i].y; DATA[i].z = pos3d[i].z; }
+  document.getElementById("stats").textContent = `${DATA.length} entries in OzIndex`;
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.01, 100);
+  camera.position.set(1.2, 1.0, 1.5);
+  renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setClearColor(0x050510);
+  document.body.appendChild(renderer.domElement);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.5;
+
+  const geo = new THREE.BufferGeometry();
+  const posArr = new Float32Array(DATA.length * 3);
+  const colArr = new Float32Array(DATA.length * 3);
+  const sizeArr = new Float32Array(DATA.length);
+  for (let i = 0; i < DATA.length; i++) {
+    posArr[i*3] = DATA[i].x; posArr[i*3+1] = DATA[i].y; posArr[i*3+2] = DATA[i].z;
+    const c = new THREE.Color(guessColor(DATA[i].location, DATA[i].memo));
+    colArr[i*3] = c.r; colArr[i*3+1] = c.g; colArr[i*3+2] = c.b;
+    sizeArr[i] = Math.max(0.03, Math.min(0.15, 0.03 + DATA[i].backed * 0.01));
+  }
+  geo.setAttribute("position", new THREE.BufferAttribute(posArr, 3));
+  geo.setAttribute("color", new THREE.BufferAttribute(colArr, 3));
+  const mat = new THREE.PointsMaterial({ size:0.05, vertexColors:true, sizeAttenuation:true, transparent:true, opacity:0.9 });
+  points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  // ambient particles
+  const starsGeo = new THREE.BufferGeometry();
+  const starsPos = new Float32Array(300 * 3);
+  for (let i = 0; i < 300; i++) { starsPos[i*3]=(Math.random()-0.5)*10; starsPos[i*3+1]=(Math.random()-0.5)*10; starsPos[i*3+2]=(Math.random()-0.5)*10; }
+  starsGeo.setAttribute("position", new THREE.BufferAttribute(starsPos, 3));
+  scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({ size:0.005, color:0x333344 })));
+
+  const raycaster = new THREE.Raycaster();
+  raycaster.params.Points.threshold = 0.06;
+  const mouse = new THREE.Vector2();
+
+  renderer.domElement.addEventListener("click", e => {
+    mouse.x = (e.clientX/innerWidth)*2-1;
+    mouse.y = -(e.clientY/innerHeight)*2+1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObject(points);
+    if (hits.length) {
+      const d = DATA[hits[0].index];
+      document.getElementById("d-title").textContent = d.memo.slice(0, 80);
+      document.getElementById("d-url").textContent = d.location;
+      document.getElementById("d-memo").textContent = d.memo;
+      document.getElementById("d-price").textContent = d.backed > 0 ? `${d.backed} OZC backed` : "unpriced";
+      document.getElementById("detail").style.display = "";
+      controls.autoRotate = false;
+    } else {
+      document.getElementById("detail").style.display = "none";
+      controls.autoRotate = true;
+    }
+  });
+
+  window.addEventListener("resize", () => { camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+
+  (function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); })();
+}
+
+main();
+</script>
+</body>
+</html>
