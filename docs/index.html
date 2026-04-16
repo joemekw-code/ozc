@@ -69,8 +69,9 @@ footer{text-align:center;font-size:10px;color:#bbb;padding:16px 0;border-top:1px
 <div class="sub">Trust without authority — stake credibility on information</div>
 
 <div class="thesis">
-<b>The problem:</b> Who decides what to trust? Churches, states, media, platforms — authority has always been the arbiter.<br><br>
-<b>OZC:</b> Stake your credibility on claims you believe. Others support or ignore. <b>Lies cost you. Finding truth early rewards you.</b> No authority needed.
+<b>Your AI's information filter — owned by you.</b><br><br>
+Every AI company decides what your AI can see. OZC lets <b>you</b> decide. Add one file to your project → your AI gets a trust layer with a shared ledger where anyone can stake on information they believe in.<br><br>
+<code style="background:#e0e7ff;padding:3px 6px;border-radius:4px;font-size:11px">from ozc_filter import OZCFilter; f = OZCFilter(); f.filter_urls(["https://..."])</code>
 </div>
 
 <div class="stats" id="stats">
@@ -89,9 +90,12 @@ footer{text-align:center;font-size:10px;color:#bbb;padding:16px 0;border-top:1px
 </div>
 
 <div class="cta">
-<b>Use OZC in Claude Code / Cursor / any MCP client:</b>
-<code>claude mcp add ozc -- node /path/to/ozc/cli/mcp-server.js</code>
-<div style="font-size:11px;color:#888;margin-top:8px">Or install from GitHub Packages: <code style="display:inline">npm i @joemekw-code/ozc-mcp</code></div>
+<b>Add to your AI in 30 seconds:</b>
+<code>curl -O https://raw.githubusercontent.com/joemekw-code/ozc/main/cli/ozc_filter.py</code>
+<div style="font-size:11px;color:#888;margin-top:8px">
+Or MCP: <code style="display:inline">claude mcp add ozc -- node /path/to/ozc/cli/mcp-server.js</code><br>
+Or npm: <code style="display:inline">npm i @joemekw-code/ozc-mcp</code>
+</div>
 </div>
 
 <div class="links">
