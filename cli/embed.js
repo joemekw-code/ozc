@@ -157,9 +157,17 @@ if (isSearch) {
   let qnorm = 0; for (let i = 0; i < qvec.length; i++) qnorm += qvec[i]*qvec[i];
   qnorm = Math.sqrt(qnorm) || 1; for (let i = 0; i < qvec.length; i++) qvec[i] /= qnorm;
 
-  const ranked = files.map((f, i) => ({ ...f, sim: cosine(vectors[i], qvec) }))
+  let ranked = files.map((f, i) => ({ ...f, sim: cosine(vectors[i], qvec) }))
     .filter(r => r.sim > 0.01)
     .sort((a, b) => b.sim - a.sim);
+  // fallback: substring match for Japanese/mixed text when TF-IDF fails
+  if (ranked.length === 0) {
+    const lower = query.toLowerCase();
+    ranked = files.filter(f => {
+      const content = readFileSync(f.path, "utf8").toLowerCase();
+      return content.includes(lower) || lower.split(/\s+/).every(w => content.includes(w));
+    }).map(f => ({ ...f, sim: 0.5 }));
+  }
   console.log(`\n  ${ranked.length} results for "${query}"\n`);
   for (const r of ranked.slice(0, 15)) {
     console.log(`  sim=${r.sim.toFixed(3)}  ${r.path}`);
