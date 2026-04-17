@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: ui-monospace, monospace; background: #0d0d1a; color: #eee; width: 320px; padding: 16px; margin: 0; }
+  h1 { font-size: 16px; color: #0fa; margin: 0 0 8px; }
+  .desc { font-size: 11px; color: #888; margin-bottom: 12px; }
+  input { width: 100%; padding: 8px; background: #1a1a2e; color: #eee; border: 1px solid #333; border-radius: 6px; font-family: inherit; font-size: 12px; margin-bottom: 8px; }
+  button { width: 100%; padding: 8px; background: #0fa; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: inherit; }
+  button:hover { background: #0f8; }
+  .result { margin-top: 12px; font-size: 11px; padding: 8px; background: #1a1a2e; border-radius: 6px; }
+  .links { margin-top: 12px; font-size: 10px; text-align: center; }
+  .links a { color: #0fa; text-decoration: none; margin: 0 6px; }
+</style>
+</head>
+<body>
+  <h1>◆ OZC</h1>
+  <div class="desc">See what people value. List any URL.</div>
+
+  <input id="url" type="text" placeholder="Paste any URL to check...">
+  <button id="check">Check OZC backing</button>
+
+  <div id="result" class="result" style="display:none"></div>
+
+  <div class="links">
+    <a href="https://github.com/joemekw-code/ozc" target="_blank">GitHub</a>
+    <a href="https://joemekw-code.github.io/ozc/" target="_blank">Dashboard</a>
+  </div>
+
+  <script>
+    document.getElementById("check").onclick = async () => {
+      const url = document.getElementById("url").value.trim();
+      if (!url) return;
+
+      const enc = new TextEncoder().encode(url);
+      const hash = await crypto.subtle.digest("SHA-256", enc);
+      const hex = [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
+
+      const rpc = "https://base-rpc.publicnode.com";
+      const market = "0xc1f93ecc3a40f28bb9cf001a85ca7477fe41a3d6";
+      const data = "0xb30906d4" + hex;
+
+      try {
+        const r = await fetch(rpc, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"eth_call", params:[{to:market, data},"latest"] })
+        });
+        const j = await r.json();
+        const result = j.result || "0x0";
+
+        if (result === "0x0" || result.length < 130) {
+          document.getElementById("result").style.display = "";
+          document.getElementById("result").innerHTML = `<b>Not on OZC yet.</b><br>Be the first to list it:<br><code style="font-size:10px;color:#0fa">ozc save "${url}"</code>`;
+        } else {
+          const h = result.slice(2);
+          const shares = parseInt(h.slice(192, 256), 16);
+          const reserve = parseInt(h.slice(256, 320), 16) / 1e18;
+          document.getElementById("result").style.display = "";
+          document.getElementById("result").innerHTML = `<b style="color:#0fa">${shares} shares backed</b><br>${reserve.toFixed(4)} OZC locked<br><br>URL: ${url}`;
+        }
+      } catch (e) {
+        document.getElementById("result").style.display = "";
+        document.getElementById("result").textContent = "Error: " + e.message;
+      }
+    };
+
+    // Auto-fill current tab URL
+    chrome?.tabs?.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.url) document.getElementById("url").value = tabs[0].url;
+    });
+  </script>
+</body>
+</html>

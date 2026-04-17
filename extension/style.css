@@ -1,0 +1,48 @@
+.ozc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #0d0d1a;
+  color: #0fa;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 6px;
+  cursor: pointer;
+  border: 1px solid #1a1a2e;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.ozc-badge:hover {
+  background: #1a1a3a;
+  border-color: #0fa;
+}
+.ozc-badge .ozc-icon {
+  font-size: 9px;
+}
+.ozc-badge.ozc-zero {
+  color: #555;
+  border-color: #222;
+}
+.ozc-badge.ozc-hot {
+  color: #ff0;
+  border-color: #ff0;
+  background: #1a1a00;
+}
+.ozc-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #0fa;
+  color: #000;
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  margin-left: 4px;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+.ozc-save-btn:hover { background: #0f8; }

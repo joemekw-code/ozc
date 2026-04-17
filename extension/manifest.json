@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "OZC — See what people value",
+  "version": "0.1.0",
+  "description": "Shows OZC backing on YouTube videos, X posts, and any URL. Anyone can list any URL on OZC.",
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://*.youtube.com/*", "https://*.x.com/*", "https://*.twitter.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://x.com/*", "https://twitter.com/*"],
+      "js": ["content.js"],
+      "css": ["style.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
