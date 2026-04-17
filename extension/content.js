@@ -4,13 +4,9 @@
 const RPC = "https://base-rpc.publicnode.com";
 const OZ_MARKET = "0xc1f93ecc3a40f28bb9cf001a85ca7477fe41a3d6";
 
-// keccak256 (minimal implementation for browser)
+// keccak256 from keccak256.js (loaded before this script)
 async function keccak256(text) {
-  // Use SubtleCrypto SHA-256 as fallback identifier (not real keccak, but unique per URL)
-  // For production: import a proper keccak lib
-  const enc = new TextEncoder().encode(text);
-  const hash = await crypto.subtle.digest("SHA-256", enc);
-  return "0x" + [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
+  return window.ozcKeccak256(text);
 }
 
 // RPC call to Base mainnet
