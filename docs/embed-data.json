@@ -1,7 +1,7 @@
 [
   {
     "name": "01-initial-requirements.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/01-initial-requirements.md",
+    "path": "rag/conversation/01-initial-requirements.md",
     "ext": ".md",
     "size": 1324,
     "preview": "# 初期要件定義 (2026-04-14)  ## プロジェクト名: OZC  エージェントの情報の真実性をトレードする仕組み。  ## 核心仕様 - 自分が公開するデータに対して最低限の金額は市場が決める - 時価総額を上げることができる - データと、概要、作成者、時価総額がわかるようにデプロイ",
@@ -11,7 +11,7 @@
   },
   {
     "name": "02-deployment-history.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/02-deployment-history.md",
+    "path": "rag/conversation/02-deployment-history.md",
     "ext": ".md",
     "size": 1345,
     "preview": "# デプロイ履歴 (2026-04-14〜15)  ## Phase 1: Base Sepolia テストネット - OZCToken, DataRegistry, BondingCurve, CapacityMarket をデプロイ - テスト: deploy → stake → unstake",
@@ -21,7 +21,7 @@
   },
   {
     "name": "03-vision-evolution.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/03-vision-evolution.md",
+    "path": "rag/conversation/03-vision-evolution.md",
     "ext": ".md",
     "size": 1414,
     "preview": "# ビジョンの進化 (2026-04-14〜16)  ## v1: エージェント真実市場 情報の真実性をトレードする。Skin in the Gameとしてステーク。  ## v2: 情報信頼の権威切り離し Satoshi論文のような抽象：「情報の信頼を権威から切り離す」 - 神官→裁判官→新聞→プ",
@@ -31,7 +31,7 @@
   },
   {
     "name": "04-architecture-decisions.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/04-architecture-decisions.md",
+    "path": "rag/conversation/04-architecture-decisions.md",
     "ext": ".md",
     "size": 1672,
     "preview": "# 技術的判断の記録  ## Chain選択: Base (EVM) - 理由: 最速ローンチ、AMM参考実装豊富、Solidity ecosystem - SOLも検討したが「最速ローンチ」でBase確定  ## Bonding Curve: Linear - price = BASE + SLO",
@@ -41,7 +41,7 @@
   },
   {
     "name": "05-operations-outreach.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/05-operations-outreach.md",
+    "path": "rag/conversation/05-operations-outreach.md",
     "ext": ".md",
     "size": 1593,
     "preview": "# 運用・アウトリーチ記録  ## デプロイ済みコントラクト（全Base mainnet） - OZCToken: 0x72d12a43dfDda3D6c518Ff9A86E087eb8Be7A144 - DataRegistryV2: 0x3ca993e7183824e11b2a65cf183b4",
@@ -51,7 +51,7 @@
   },
   {
     "name": "06-user-profile.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/06-user-profile.md",
+    "path": "rag/conversation/06-user-profile.md",
     "ext": ".md",
     "size": 1019,
     "preview": "# ユーザープロファイル  ## 基本 - X: @oznosekai42 「OZの世界を作りたい16歳」 - email: joemekw@gmail.com - GitHub: joemekw-code - npm: joejoejoejoe - Reddit: HoldSilly4456  #",
@@ -61,7 +61,7 @@
   },
   {
     "name": "07-competitive-landscape.md",
-    "path": "/Users/maekawasei/ozc/rag/conversation/07-competitive-landscape.md",
+    "path": "rag/conversation/07-competitive-landscape.md",
     "ext": ".md",
     "size": 967,
     "preview": "# 競合・市場調査結果  ## 同領域のプロジェクト（2026-04-15調査） - ERC-8004: agent-level identity + reputation NFT。129,000エージェント登録済。OZCとの違い: identity単位 vs claim単位 - MolTrust:",
@@ -71,7 +71,7 @@
   },
   {
     "name": "BondingCurve.sol",
-    "path": "/Users/maekawasei/ozc/src/BondingCurve.sol",
+    "path": "src/BondingCurve.sol",
     "ext": ".sol",
     "size": 1162,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice Linear bonding curve: price = BASE + SLOPE * supply /// Simple, auditable, easy ",
@@ -81,7 +81,7 @@
   },
   {
     "name": "CapacityMarket.sol",
-    "path": "/Users/maekawasei/ozc/src/CapacityMarket.sol",
+    "path": "src/CapacityMarket.sol",
     "ext": ".sol",
     "size": 2720,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface ICapacityToken {     function transferFrom(address, address, uint256) external ret",
@@ -91,7 +91,7 @@
   },
   {
     "name": "ClaimValuation.sol",
-    "path": "/Users/maekawasei/ozc/src/ClaimValuation.sol",
+    "path": "src/ClaimValuation.sol",
     "ext": ".sol",
     "size": 1850,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice ETH-denominated valuation layer for OZC claims. /// Anyone can commit ETH to a c",
@@ -101,7 +101,7 @@
   },
   {
     "name": "DataRegistry.sol",
-    "path": "/Users/maekawasei/ozc/src/DataRegistry.sol",
+    "path": "src/DataRegistry.sol",
     "ext": ".sol",
     "size": 3720,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  import {BondingCurve} from \"./BondingCurve.sol\";  interface IERC20 {     function transferFr",
@@ -111,7 +111,7 @@
   },
   {
     "name": "DataRegistryV2.sol",
-    "path": "/Users/maekawasei/ozc/src/DataRegistryV2.sol",
+    "path": "src/DataRegistryV2.sol",
     "ext": ".sol",
     "size": 4201,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  import {BondingCurve} from \"./BondingCurve.sol\";  interface IRegistryV2Token {     function ",
@@ -121,7 +121,7 @@
   },
   {
     "name": "OZCFaucet.sol",
-    "path": "/Users/maekawasei/ozc/src/OZCFaucet.sol",
+    "path": "src/OZCFaucet.sol",
     "ext": ".sol",
     "size": 1009,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IFaucetToken {     function transfer(address, uint256) external returns (bool);   ",
@@ -131,7 +131,7 @@
   },
   {
     "name": "OZCToken.sol",
-    "path": "/Users/maekawasei/ozc/src/OZCToken.sol",
+    "path": "src/OZCToken.sol",
     "ext": ".sol",
     "size": 1687,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  contract OZCToken {     string public constant name = \"OZC\";     string public constant symb",
@@ -141,7 +141,7 @@
   },
   {
     "name": "OzIndex.sol",
-    "path": "/Users/maekawasei/ozc/src/OzIndex.sol",
+    "path": "src/OzIndex.sol",
     "ext": ".sol",
     "size": 2935,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice Shared decentralized index. Everyone holds the same view. /// Each entry records",
@@ -151,7 +151,7 @@
   },
   {
     "name": "OzIndexFinal.sol",
-    "path": "/Users/maekawasei/ozc/src/OzIndexFinal.sol",
+    "path": "src/OzIndexFinal.sol",
     "ext": ".sol",
     "size": 5841,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IFinalToken {     function transferFrom(address, address, uint256) external return",
@@ -161,7 +161,7 @@
   },
   {
     "name": "OzIndexV2.sol",
-    "path": "/Users/maekawasei/ozc/src/OzIndexV2.sol",
+    "path": "src/OzIndexV2.sol",
     "ext": ".sol",
     "size": 4130,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IOZC20 {     function transferFrom(address, address, uint256) external returns (bo",
@@ -171,7 +171,7 @@
   },
   {
     "name": "OzIndexV3.sol",
-    "path": "/Users/maekawasei/ozc/src/OzIndexV3.sol",
+    "path": "src/OzIndexV3.sol",
     "ext": ".sol",
     "size": 5901,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface IV3Token {     function transferFrom(address, address, uint256) external returns (",
@@ -181,7 +181,7 @@
   },
   {
     "name": "SponsoredFaucet.sol",
-    "path": "/Users/maekawasei/ozc/src/SponsoredFaucet.sol",
+    "path": "src/SponsoredFaucet.sol",
     "ext": ".sol",
     "size": 1596,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  interface ISpToken {     function transfer(address, uint256) external returns (bool);     fu",
@@ -191,7 +191,7 @@
   },
   {
     "name": "URLValuation.sol",
-    "path": "/Users/maekawasei/ozc/src/URLValuation.sol",
+    "path": "src/URLValuation.sol",
     "ext": ".sol",
     "size": 3945,
     "preview": "// SPDX-License-Identifier: MIT pragma solidity ^0.8.20;  /// @notice URL-level (or any identifier-level) valuation. /// Anyone can commit ETH to any ",
@@ -201,7 +201,7 @@
   },
   {
     "name": "bin.js",
-    "path": "/Users/maekawasei/ozc/cli/bin.js",
+    "path": "cli/bin.js",
     "ext": ".js",
     "size": 16722,
     "preview": "#!/usr/bin/env node // OZC unified CLI. // Usage: //   npx github:joemekw-code/ozc list //   npx github:joemekw-code/ozc info <id> //   npx github:joe",
@@ -211,7 +211,7 @@
   },
   {
     "name": "embed.js",
-    "path": "/Users/maekawasei/ozc/cli/embed.js",
+    "path": "cli/embed.js",
     "ext": ".js",
     "size": 6790,
     "preview": "#!/usr/bin/env node // `ozc embed <dir> [<dir2>...]` → TF-IDF vectorize local files → PCA to 3D → output JSON // Output: docs/embed-data.json — consum",
@@ -221,7 +221,7 @@
   },
   {
     "name": "filter.js",
-    "path": "/Users/maekawasei/ozc/cli/filter.js",
+    "path": "cli/filter.js",
     "ext": ".js",
     "size": 4478,
     "preview": "#!/usr/bin/env node // OZC filter primitives — personal information filter for any AI / agent / RAG pipeline. // // Pattern: give us a list of URLs (o",
@@ -231,7 +231,7 @@
   },
   {
     "name": "gateway.js",
-    "path": "/Users/maekawasei/ozc/cli/gateway.js",
+    "path": "cli/gateway.js",
     "ext": ".js",
     "size": 11365,
     "preview": "#!/usr/bin/env node // OZC HTTP Gateway — exposes OZC as a zero-dependency REST API. // Any agent platform that can POST JSON (ChatGPT Actions, n8n, Z",
@@ -241,7 +241,7 @@
   },
   {
     "name": "index.js",
-    "path": "/Users/maekawasei/ozc/cli/index.js",
+    "path": "cli/index.js",
     "ext": ".js",
     "size": 2185,
     "preview": "#!/usr/bin/env node // OZC Indexer — outputs all data entries as JSON for any agent to consume. // Usage: node index.js  (no args, no setup)  import {",
@@ -251,7 +251,7 @@
   },
   {
     "name": "mcp-server.js",
-    "path": "/Users/maekawasei/ozc/cli/mcp-server.js",
+    "path": "cli/mcp-server.js",
     "ext": ".js",
     "size": 14340,
     "preview": "#!/usr/bin/env node // OZC MCP Server — drop-in tool layer for Claude Desktop / Cursor / Cline / any MCP client. // Launch: node mcp-server.js  (regis",
@@ -261,7 +261,7 @@
   },
   {
     "name": "optimize.js",
-    "path": "/Users/maekawasei/ozc/cli/optimize.js",
+    "path": "cli/optimize.js",
     "ext": ".js",
     "size": 2787,
     "preview": "#!/usr/bin/env node // 最適化関数の定量化。 // `metrics/decisions.jsonl` を読んで、edge別に prior vs observed の履歴を集計。 // 未来の意思決定で Bayes 更新に使う posterior を返す。  import { ",
@@ -271,7 +271,7 @@
   },
   {
     "name": "ozc.js",
-    "path": "/Users/maekawasei/ozc/cli/ozc.js",
+    "path": "cli/ozc.js",
     "ext": ".js",
     "size": 8609,
     "preview": "#!/usr/bin/env node import { createPublicClient, createWalletClient, http, keccak256, toBytes, parseUnits, formatUnits } from \"viem\"; import { private",
@@ -281,7 +281,7 @@
   },
   {
     "name": "ozc_filter.py",
-    "path": "/Users/maekawasei/ozc/cli/ozc_filter.py",
+    "path": "cli/ozc_filter.py",
     "ext": ".py",
     "size": 6413,
     "preview": "\"\"\" OZC Filter — Personal information trust layer for any AI/agent.  Drop this file into your project. No pip install needed.  Usage:     from ozc_fil",
@@ -291,7 +291,7 @@
   },
   {
     "name": "package-lock.json",
-    "path": "/Users/maekawasei/ozc/cli/package-lock.json",
+    "path": "cli/package-lock.json",
     "ext": ".json",
     "size": 47757,
     "preview": "{   \"name\": \"ozc-cli\",   \"version\": \"0.1.0\",   \"lockfileVersion\": 3,   \"requires\": true,   \"packages\": {     \"\": {       \"name\": \"ozc-cli\",       \"ver",
@@ -301,7 +301,7 @@
   },
   {
     "name": "package.json",
-    "path": "/Users/maekawasei/ozc/cli/package.json",
+    "path": "cli/package.json",
     "ext": ".json",
     "size": 680,
     "preview": "{   \"name\": \"ozc-mcp\",   \"version\": \"0.1.0\",   \"description\": \"OZC MCP Server — trust infrastructure for agent-generated information. Stake credibilit",
@@ -311,7 +311,7 @@
   },
   {
     "name": "rag-status.js",
-    "path": "/Users/maekawasei/ozc/cli/rag-status.js",
+    "path": "cli/rag-status.js",
     "ext": ".js",
     "size": 2419,
     "preview": "#!/usr/bin/env node // `ozc rag-status [dir]` — show what's in your local RAG (file inventory) // `ozc rag-status ~/Documents ~/notes` // // Outputs: ",
@@ -321,7 +321,7 @@
   },
   {
     "name": "search.js",
-    "path": "/Users/maekawasei/ozc/cli/search.js",
+    "path": "cli/search.js",
     "ext": ".js",
     "size": 4659,
     "preview": "#!/usr/bin/env node // `ozc search \"<query>\"` — personal search combining: //   1. On-chain OzIndex (global, priced by conviction) //   2. Local files",
@@ -331,7 +331,7 @@
   },
   {
     "name": "timeline.js",
-    "path": "/Users/maekawasei/ozc/cli/timeline.js",
+    "path": "cli/timeline.js",
     "ext": ".js",
     "size": 5552,
     "preview": "#!/usr/bin/env node // `ozc timeline <address>` — show that wallet's full OZC history in time order. // N=1 value: even with no other users, your own ",
@@ -341,7 +341,7 @@
   },
   {
     "name": "verify.js",
-    "path": "/Users/maekawasei/ozc/cli/verify.js",
+    "path": "cli/verify.js",
     "ext": ".js",
     "size": 2625,
     "preview": "#!/usr/bin/env node // `ozc verify \"<claim>\"` — check if a claim is already on OZC, show its conviction. // Used by agents BEFORE they assert a factua",
@@ -351,7 +351,7 @@
   },
   {
     "name": "watch.js",
-    "path": "/Users/maekawasei/ozc/cli/watch.js",
+    "path": "cli/watch.js",
     "ext": ".js",
     "size": 2050,
     "preview": "#!/usr/bin/env node // Watch OZC activity: new entries, new backings, new wallets receiving signal. // Usage: node watch.js  (prints events as they ha",
@@ -361,7 +361,7 @@
   },
   {
     "name": "x-metrics.js",
-    "path": "/Users/maekawasei/ozc/cli/x-metrics.js",
+    "path": "cli/x-metrics.js",
     "ext": ".js",
     "size": 4986,
     "preview": "#!/usr/bin/env node // X (Twitter) engagement metrics collector // // 我々のXアカウント profile にアクセスし、最新ピン留め or 直近投稿の // engagement (views / likes / retweets",
@@ -371,7 +371,7 @@
   },
   {
     "name": "x-watch.js",
-    "path": "/Users/maekawasei/ozc/cli/x-watch.js",
+    "path": "cli/x-watch.js",
     "ext": ".js",
     "size": 1027,
     "preview": "#!/usr/bin/env node // X engagement watch loop: 30分ごとに cli/x-metrics.js を実行する。 // // 実行: //   X_COOKIE_AUTH_TOKEN=... X_COOKIE_CT0=... node cli/x-watc",
@@ -381,7 +381,7 @@
   },
   {
     "name": "embed-data.json",
-    "path": "/Users/maekawasei/ozc/docs/embed-data.json",
+    "path": "docs/embed-data.json",
     "ext": ".json",
     "size": 14060,
     "preview": "[   {     \"name\": \"BondingCurve.sol\",     \"path\": \"src/BondingCurve.sol\",     \"ext\": \".sol\",     \"size\": 1162,     \"preview\": \"// SPDX-License-Identif",
@@ -391,7 +391,7 @@
   },
   {
     "name": "explore.html",
-    "path": "/Users/maekawasei/ozc/docs/explore.html",
+    "path": "docs/explore.html",
     "ext": ".html",
     "size": 5741,
     "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC · 3D D",
@@ -401,7 +401,7 @@
   },
   {
     "name": "index.html",
-    "path": "/Users/maekawasei/ozc/docs/index.html",
+    "path": "docs/index.html",
     "ext": ".html",
     "size": 7690,
     "preview": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\"> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"> <title>OZC — Trust ",
@@ -411,7 +411,7 @@
   },
   {
     "name": "leaderboard.html",
-    "path": "/Users/maekawasei/ozc/docs/leaderboard.html",
+    "path": "docs/leaderboard.html",
     "ext": ".html",
     "size": 7880,
     "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC · 情報ラン",
@@ -421,7 +421,7 @@
   },
   {
     "name": "llms.txt",
-    "path": "/Users/maekawasei/ozc/docs/llms.txt",
+    "path": "docs/llms.txt",
     "ext": ".txt",
     "size": 4523,
     "preview": "# OZC  > The bigger question OZC is one answer to: in an era where humans delegate to AI agents, who decides what information is trustworthy? OZC's hy",
@@ -431,7 +431,7 @@
   },
   {
     "name": "me.html",
-    "path": "/Users/maekawasei/ozc/docs/me.html",
+    "path": "docs/me.html",
     "ext": ".html",
     "size": 9225,
     "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC · my t",
@@ -441,7 +441,7 @@
   },
   {
     "name": "ops.html",
-    "path": "/Users/maekawasei/ozc/docs/ops.html",
+    "path": "docs/ops.html",
     "ext": ".html",
     "size": 13470,
     "preview": "<!doctype html> <html lang=\"ja\"> <head> <meta charset=\"utf-8\"/> <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/> <title>OZC 運用ダッシュ",
@@ -451,7 +451,7 @@
   },
   {
     "name": "vercel.json",
-    "path": "/Users/maekawasei/ozc/docs/vercel.json",
+    "path": "docs/vercel.json",
     "ext": ".json",
     "size": 50,
     "preview": "{   \"cleanUrls\": true,   \"trailingSlash\": false } ",
@@ -461,7 +461,7 @@
   },
   {
     "name": "langchain_ozc.py",
-    "path": "/Users/maekawasei/ozc/examples/langchain_ozc.py",
+    "path": "examples/langchain_ozc.py",
     "ext": ".py",
     "size": 3404,
     "preview": "\"\"\"OZC as LangChain tools. Drop into any LangChain agent.  Requires:  pip install langchain web3 eth-account Env:       OZC_PRIVATE_KEY=0x...  (a Base",
@@ -471,7 +471,7 @@
   },
   {
     "name": "langchain_rerank.py",
-    "path": "/Users/maekawasei/ozc/examples/langchain_rerank.py",
+    "path": "examples/langchain_rerank.py",
     "ext": ".py",
     "size": 1866,
     "preview": "\"\"\" OZC as a LangChain BaseDocumentCompressor / re-ranker.  Example: take any LangChain retriever's output, re-rank with personal filter. \"\"\" from typ",
@@ -481,7 +481,7 @@
   },
   {
     "name": "openai_tools.py",
-    "path": "/Users/maekawasei/ozc/examples/openai_tools.py",
+    "path": "examples/openai_tools.py",
     "ext": ".py",
     "size": 1336,
     "preview": "\"\"\"OZC exposed as OpenAI tool-calling schema. Works with any model supporting tools.  Requires:  pip install openai web3 eth-account Env:       OPENAI",
@@ -491,7 +491,7 @@
   },
   {
     "name": "ozc_rag_filter.py",
-    "path": "/Users/maekawasei/ozc/examples/ozc_rag_filter.py",
+    "path": "examples/ozc_rag_filter.py",
     "ext": ".py",
     "size": 3202,
     "preview": "\"\"\" OZC as a personal re-ranker for any RAG pipeline.  3-line drop-in: take your retriever's URL/doc list, annotate with on-chain commitments, then co",
@@ -501,7 +501,7 @@
   },
   {
     "name": "README.md",
-    "path": "/Users/maekawasei/ozc/launch/auto/README.md",
+    "path": "launch/auto/README.md",
     "ext": ".md",
     "size": 3567,
     "preview": "# launch/auto — 自動投稿スクリプト  各外部プラットフォームへの投稿を完全自動化したスクリプト。   あなたが credentials を1回貼るだけで、僕が残り全部やります。  ## 優先度と1回分のあなたの作業時間  | チャネル | スクリプト | 必要な credential",
@@ -511,7 +511,7 @@
   },
   {
     "name": "devto.js",
-    "path": "/Users/maekawasei/ozc/launch/auto/devto.js",
+    "path": "launch/auto/devto.js",
     "ext": ".js",
     "size": 3913,
     "preview": "#!/usr/bin/env node // dev.to 自動投稿スクリプト（公式 REST API） // // dev.to には公式 API があります。POST /api/articles でそのまま記事を publish 可能。 // docs: https://developers.f",
@@ -521,7 +521,7 @@
   },
   {
     "name": "farcaster.js",
-    "path": "/Users/maekawasei/ozc/launch/auto/farcaster.js",
+    "path": "launch/auto/farcaster.js",
     "ext": ".js",
     "size": 9482,
     "preview": "#!/usr/bin/env node // Farcaster 投稿スクリプト // // Farcaster は wallet-native SNS。投稿(cast)には FID が必要。 // 本スクリプトは「credentials があれば即 post」形式で、3つの経路をサポート。 // ",
@@ -531,7 +531,7 @@
   },
   {
     "name": "hn.js",
-    "path": "/Users/maekawasei/ozc/launch/auto/hn.js",
+    "path": "launch/auto/hn.js",
     "ext": ".js",
     "size": 2127,
     "preview": "#!/usr/bin/env node // Hacker News \"Show HN\" 自動投稿スクリプト（Playwright） // HNにはAPIがないためブラウザ自動化で対応。 // // 必要な環境変数: //   HN_USER  - ユーザー名 //   HN_PASS  - パスワ",
@@ -541,7 +541,7 @@
   },
   {
     "name": "indiehackers.js",
-    "path": "/Users/maekawasei/ozc/launch/auto/indiehackers.js",
+    "path": "launch/auto/indiehackers.js",
     "ext": ".js",
     "size": 4668,
     "preview": "#!/usr/bin/env node // Indie Hackers 自動投稿スクリプト（Playwright） // // Indie Hackers は公式な投稿用 public API を提供していません // （内部 GraphQL endpoint はあるが認証が Cookie/CSR",
@@ -551,7 +551,7 @@
   },
   {
     "name": "npm-publish.sh",
-    "path": "/Users/maekawasei/ozc/launch/auto/npm-publish.sh",
+    "path": "launch/auto/npm-publish.sh",
     "ext": ".sh",
     "size": 568,
     "preview": "#!/bin/bash # npm publish 自動化 # 必要: NPM_TOKEN（https://www.npmjs.com/settings/<user>/tokens で \"automation\" タイプを作成）  set -e  if [ -z \"$NPM_TOKEN\" ]; the",
@@ -561,7 +561,7 @@
   },
   {
     "name": "reddit.js",
-    "path": "/Users/maekawasei/ozc/launch/auto/reddit.js",
+    "path": "launch/auto/reddit.js",
     "ext": ".js",
     "size": 2424,
     "preview": "#!/usr/bin/env node // Reddit 投稿スクリプト（Reddit公式API使用） // // 必要な環境変数: //   RD_CLIENT_ID     - reddit.com/prefs/apps で作成した script-type app の client id //",
@@ -571,7 +571,7 @@
   },
   {
     "name": "x.js",
-    "path": "/Users/maekawasei/ozc/launch/auto/x.js",
+    "path": "launch/auto/x.js",
     "ext": ".js",
     "size": 3267,
     "preview": "#!/usr/bin/env node // X (Twitter) 投稿スクリプト // // X API v2 は現在 paid tier でのみ write 可能。 // 代替として auth_token cookie によるブラウザ自動化を実装。 // // 必要な環境変数（どちらか）: /",
@@ -581,7 +581,7 @@
   },
   {
     "name": "demo.sh",
-    "path": "/Users/maekawasei/ozc/launch/demo.sh",
+    "path": "launch/demo.sh",
     "ext": ".sh",
     "size": 1294,
     "preview": "#!/bin/bash # OZC demo — 60 second story that shows \"the market silences confident lies\" # Run under `asciinema rec` to capture.  set -e typeit() { pr",
@@ -591,7 +591,7 @@
   },
   {
     "name": "devto.md",
-    "path": "/Users/maekawasei/ozc/launch/posts/devto.md",
+    "path": "launch/posts/devto.md",
     "ext": ".md",
     "size": 6817,
     "preview": "# OZC: Trust Infrastructure for Agent-Generated Information, On-Chain  LLMs are confidently wrong thousands of times a day. Agents quote each other. H",
@@ -601,7 +601,7 @@
   },
   {
     "name": "indiehackers.md",
-    "path": "/Users/maekawasei/ozc/launch/posts/indiehackers.md",
+    "path": "launch/posts/indiehackers.md",
     "ext": ".md",
     "size": 6874,
     "preview": "# I Built a Trust Layer for AI Agents on Base — No UI, No Token, Just a Ledger  Quick intro: I shipped **OZC** — a tiny on-chain protocol that lets hu",
@@ -611,7 +611,7 @@
   },
   {
     "name": "x-post.md",
-    "path": "/Users/maekawasei/ozc/launch/x-post.md",
+    "path": "launch/x-post.md",
     "ext": ".md",
     "size": 1738,
     "preview": "# X / Twitter 投稿テンプレート  **最優先：デモGIFを必ず添付してください。**   ファイル: `launch/demo.gif` (または https://raw.githubusercontent.com/joemekw-code/ozc/main/launch/demo.g",
