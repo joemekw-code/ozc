@@ -1,0 +1,121 @@
+[
+  {
+    "pattern": "V2-Price",
+    "action": "getAmountsOut WETH→USDC",
+    "success": true,
+    "details": "0.001 ETH → [1000000000000000 [1e15], 65469 [6.546e4]]",
+    "timestamp": "2026-04-16 22:33:36"
+  },
+  {
+    "pattern": "V2-Price",
+    "action": "getAmountsOut USDC→WETH",
+    "success": true,
+    "details": "0.1 USDC → [100000 [1e5], 1517511230547876 [1.517e15]]",
+    "timestamp": "2026-04-16 22:33:37"
+  },
+  {
+    "pattern": "V2vsV3",
+    "action": "Price comparison WETH/USDC",
+    "success": true,
+    "details": "V2: [1000000000000000 [1e15], 65469 [6.546e4]] | V3: 158261 [1.582e5]\n6288557191840419138863685198183437 [6.288e33]\n1\n93356 [9.335e4]",
+    "timestamp": "2026-04-16 22:33:40"
+  },
+  {
+    "pattern": "Triangular",
+    "action": "WETH→X→USDC→WETH",
+    "success": false,
+    "details": "Result: None",
+    "timestamp": "2026-04-16 22:33:42"
+  },
+  {
+    "pattern": "Triangular",
+    "action": "WETH→USDC→X→WETH",
+    "success": false,
+    "details": "Result: None",
+    "timestamp": "2026-04-16 22:33:42"
+  },
+  {
+    "pattern": "Scan",
+    "action": "WETH pairs with liquidity (of 50 scanned)",
+    "success": true,
+    "details": "Found 17 pairs",
+    "timestamp": "2026-04-16 22:49:51"
+  },
+  {
+    "pattern": "V2-Swap",
+    "action": "Approve WETH→Router",
+    "success": true,
+    "details": "blockHash            0x0000000000000000000000000000000000000000000000000000000000000000\nblockNumber ",
+    "timestamp": "2026-04-16 22:49:53"
+  },
+  {
+    "pattern": "V2-Swap",
+    "action": "WETH→USDC swap",
+    "success": true,
+    "details": "blockHash            0x0000000000000000000000000000000000000000000000000000000000000000\nblockNumber          40289554\ncontractAddress      \ncumulativeGasUsed    7285655\neffectiveGasPrice    6000000\nfr",
+    "timestamp": "2026-04-16 22:49:54"
+  },
+  {
+    "pattern": "FlashLoan",
+    "action": "Aave V3 Pool on Base Sepolia",
+    "success": false,
+    "details": "Address: 0x07eA79F68B2B3df564D0A34F8e19D9B13E339814, Code: 0x",
+    "timestamp": "2026-04-16 22:49:58"
+  },
+  {
+    "pattern": "GasCost",
+    "action": "Current gas price",
+    "success": true,
+    "details": "gasPrice: 6000000 wei, baseFee: 5000000 wei",
+    "timestamp": "2026-04-16 22:50:00"
+  },
+  {
+    "pattern": "GasCost",
+    "action": "V2 swap cost estimate",
+    "success": true,
+    "details": "150000 gas × 6000000 wei = 0.0000009000 ETH",
+    "timestamp": "2026-04-16 22:50:00"
+  },
+  {
+    "pattern": "GasCost",
+    "action": "Min profit threshold",
+    "success": true,
+    "details": "Need > 0.0000018000 ETH per trade",
+    "timestamp": "2026-04-16 22:50:00"
+  },
+  {
+    "pattern": "MEV",
+    "action": "Block analysis",
+    "success": true,
+    "details": "Base Sepolia has sequencer — MEV is limited on L2",
+    "timestamp": "2026-04-16 22:50:01"
+  },
+  {
+    "pattern": "Slippage",
+    "action": "0.0001 ETH swap",
+    "success": true,
+    "details": "Raw: [100000000000000 [1e14], 6549]",
+    "timestamp": "2026-04-16 22:50:03"
+  },
+  {
+    "pattern": "Slippage",
+    "action": "0.0005 ETH swap",
+    "success": true,
+    "details": "Raw: [500000000000000 [5e14], 32740 [3.274e4]]",
+    "timestamp": "2026-04-16 22:50:05"
+  },
+  {
+    "pattern": "Slippage",
+    "action": "0.001 ETH swap",
+    "success": true,
+    "details": "Raw: [1000000000000000 [1e15], 65461 [6.546e4]]",
+    "timestamp": "2026-04-16 22:50:06"
+  },
+  {
+    "pattern": "Slippage",
+    "action": "0.005 ETH swap",
+    "success": true,
+    "details": "Raw: [5000000000000000 [5e15], 326525 [3.265e5]]",
+    "timestamp": "2026-04-16 22:50:08"
+  }
+]
