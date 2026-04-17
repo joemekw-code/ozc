@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OZC — Trust Without Authority</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#fafafa;--card:#fff;--border:#e5e5e5;--text:#1a1a1a;--dim:#777;--accent:#2563eb;--trust:#059669;--light:#f3f4f6}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.c{max-width:600px;margin:0 auto;padding:16px}
+h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.sub{color:var(--dim);font-size:13px}
+.thesis{margin:16px 0;padding:14px;background:var(--light);border-radius:8px;font-size:14px;line-height:1.7}
+.thesis b{color:var(--text)}
+.stats{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+.st{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 12px;text-align:center;flex:1;min-width:70px}
+.st .v{font-size:15px;font-weight:700;color:var(--accent)}
+.st .l{font-size:9px;color:var(--dim)}
+.you{margin:12px 0;padding:10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:13px}
+.you b{color:var(--accent)}
+.section{font-size:11px;color:var(--dim);margin:16px 0 8px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.feed{display:flex;flex-direction:column;gap:6px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px}
+.card:hover{box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.card-top{display:flex;justify-content:space-between;align-items:center}
+.card-title{font-size:13px;font-weight:600}
+.card-trust{font-size:13px;font-weight:700;color:var(--trust)}
+.card-meta{font-size:11px;color:var(--dim);margin-top:4px}
+.card-sum{font-size:12px;color:var(--dim);margin-top:4px}
+.card-act{margin-top:8px;display:flex;gap:6px}
+.btn{border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer}
+.btn:hover{opacity:.85}
+.btn-v{background:var(--trust);color:#fff}
+.btn-s{background:var(--accent);color:#fff}
+.btn-g{background:transparent;border:1px solid var(--border);color:var(--dim)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border-radius:10px;padding:18px;width:90%;max-width:360px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.modal h3{font-size:14px;margin-bottom:10px}
+.modal label{font-size:10px;color:var(--dim);display:block;margin-top:8px}
+.modal input,.modal textarea{width:100%;background:var(--light);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);font-size:12px;margin-top:3px;font-family:inherit}
+.modal textarea{height:40px;resize:vertical}
+.modal .acts{display:flex;gap:6px;margin-top:12px;justify-content:flex-end}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;display:none;z-index:200}
+.links{margin-top:16px;text-align:center;font-size:11px;display:flex;gap:10px;justify-content:center}
+.links a{color:var(--accent);text-decoration:none}
+footer{text-align:center;padding:16px 0;font-size:9px;color:#bbb;margin-top:20px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="c">
+  <h1>OZC</h1>
+  <div class="sub">Information trust without authority</div>
+  <div id="offlineBanner" style="display:none;margin:8px 0;padding:8px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:6px;font-size:12px;color:#92400e">
+    Backend API offline. Live data unavailable.
+    To connect: open the browser console and run <code>localStorage.setItem('ozc_api','YOUR_TUNNEL_URL')</code> then reload.
+    <a href="https://github.com/joemekw-code/ozc" target="_blank" style="color:#92400e;text-decoration:underline">Learn more</a>
+  </div>
+
+  <div class="thesis">
+    <b>The problem:</b> Who decides what information to trust? Historically: churches, states, media, platforms.
+    <br><br>
+    <b>OZC:</b> You stake your credibility on information you believe in.
+    Support grows → it rises. Nobody supports it → it fades.
+    <b>Lies cost you. Finding truth early rewards you.</b>
+  </div>
+
+  <div class="you" id="youBox" style="display:none">
+    You are <b id="youName"></b> — <b id="youPts"></b> pts available.
+    <span id="youSeq" style="font-size:11px;color:var(--dim)"></span>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div style="display:flex;gap:6px;margin:8px 0">
+    <button class="btn btn-s" onclick="openShare()">Share Information</button>
+  </div>
+
+  <div class="section">Live Feed — sorted by trust</div>
+  <div class="feed" id="feed"></div>
+
+  <div class="links">
+    <a href="https://github.com/joemekw-code/ozc-protocol/blob/main/OZC_PAPER.md" target="_blank">Read the Paper (134 lines)</a>
+    <a href="https://github.com/joemekw-code/ozc-protocol" target="_blank">Source Code</a>
+    <a href="/api/docs" target="_blank">API</a>
+  </div>
+  <footer>OZC v0.1 — Experiment in progress. <a href="https://github.com/joemekw-code/ozc-protocol" style="color:#999">MIT License</a></footer>
+</div>
+
+<!-- Vouch Modal -->
+<div class="modal-bg" id="vouchModal">
+  <div class="modal">
+    <h3 id="vouchTitle">Support this</h3>
+    <div id="vouchInfo" style="font-size:11px;color:var(--dim);margin-bottom:8px"></div>
+    <label>Points to commit</label>
+    <input type="number" id="vouchAmt" value="10" min="1">
+    <div class="acts">
+      <button class="btn btn-g" onclick="closeM('vouchModal')">Cancel</button>
+      <button class="btn btn-v" onclick="doVouch()">Support</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="modal-bg" id="shareModal">
+  <div class="modal">
+    <h3>Share Information</h3>
+    <p style="font-size:11px;color:var(--dim);margin-bottom:8px">Stake your credibility. If others support it, your trust score rises.</p>
+    <label>What is it?</label>
+    <input type="text" id="shareTitle" placeholder="Title">
+    <label>Why it matters</label>
+    <textarea id="shareSummary" placeholder="Brief explanation"></textarea>
+    <label>Points to stake (min 10)</label>
+    <input type="number" id="shareStake" value="20" min="10">
+    <div class="acts">
+      <button class="btn btn-g" onclick="closeM('shareModal')">Cancel</button>
+      <button class="btn btn-s" onclick="doShare()">Share</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Set this to your backend URL (e.g. cloudflared tunnel) when the API is running.
+// Leave empty to run in demo/read-only mode.
+const API = localStorage.getItem('ozc_api') || '';
+let ME=localStorage.getItem('ozc_me');
+let currentDataId='';
+
+// Auto-join on first visit
+async function ensureJoined(){
+  if(ME){showYou();return}
+  ME='user_'+Math.random().toString(36).slice(2,8);
+  try{
+    const r=await fetch(API+'/api/market/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agent:ME})});
+    const d=await r.json();
+    if(d.ok){localStorage.setItem('ozc_me',ME);showYou();toast('Welcome! You received trust points.')}
+  }catch(e){console.error(e)}
+}
+
+function showYou(){
+  document.getElementById('youBox').style.display='block';
+  document.getElementById('youName').textContent=ME;
+  // Fetch balance
+  fetch(API+'/api/market/stats').then(r=>r.json()).then(d=>{
+    const u=d.early_adopters?.find(a=>a.agent===ME);
+    if(u){
+      document.getElementById('youPts').textContent=Math.round(u.welcome_bonus);
+      document.getElementById('youSeq').textContent=' (early adopter #'+u.seq_number+')';
+    }
+  });
+}
+
+async function load(){
+  try{
+    const [lr,sr]=await Promise.all([fetch(API+'/api/market/list'),fetch(API+'/api/market/stats')]);
+    const list=await lr.json(),stats=await sr.json();
+    const items=list.items||[];
+    const total=items.reduce((s,i)=>s+i.market_cap,0);
+    document.getElementById('stats').innerHTML=`
+      <div class="st"><div class="v">${stats.users||0}</div><div class="l">Participants</div></div>
+      <div class="st"><div class="v">${items.length}</div><div class="l">Claims</div></div>
+      <div class="st"><div class="v">${fmt(total)}</div><div class="l">Total Trust</div></div>`;
+    if(!items.length){document.getElementById('feed').innerHTML='<div style="text-align:center;color:var(--dim);padding:30px;font-size:13px">No claims yet. Be the first to share something.</div>';return}
+    document.getElementById('feed').innerHTML=items.map(d=>`
+      <div class="card">
+        <div class="card-top"><div class="card-title">${esc(d.title)}</div><div class="card-trust">${fmt(d.market_cap)} trust</div></div>
+        <div class="card-sum">${esc(d.summary)}</div>
+        <div class="card-meta">by ${esc(d.deployer)} · ${fmt(d.total_staked)} pts committed</div>
+        <div class="card-act">
+          <button class="btn btn-v" onclick="openVouch('${d.id}','${esc(d.title)}')">Support</button>
+        </div>
+      </div>`).join('');
+  }catch(e){document.getElementById('feed').innerHTML='<div style="text-align:center;color:var(--dim);padding:30px">Cannot connect to backend API</div>';document.getElementById('offlineBanner').style.display='block'}
+}
+
+function openVouch(id,title){currentDataId=id;document.getElementById('vouchTitle').textContent='Support: '+title;
+  fetch(API+'/api/market/price/'+id).then(r=>r.json()).then(d=>{document.getElementById('vouchInfo').textContent='Current trust: '+fmt(d.market_cap)+' · Early supporters gain more influence'});
+  document.getElementById('vouchModal').classList.add('open')}
+function openShare(){document.getElementById('shareModal').classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+
+async function doVouch(){
+  const amt=document.getElementById('vouchAmt').value;
+  try{const r=await fetch(API+'/api/market/stake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data_id:currentDataId,amount:Number(amt),agent:ME})});
+    const d=await r.json();if(d.ok){toast('Supported with '+amt+' pts');closeM('vouchModal');load()}else toast(d.error||'Error')
+  }catch(e){toast('Error')}
+}
+
+async function doShare(){
+  const title=document.getElementById('shareTitle').value.trim();
+  const summary=document.getElementById('shareSummary').value.trim();
+  const stake=document.getElementById('shareStake').value;
+  if(!title){toast('Title required');return}
+  try{const r=await fetch(API+'/api/market/deploy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,summary,stake:Number(stake),agent:ME})});
+    const d=await r.json();if(d.ok){toast('Shared!');closeM('shareModal');load()}else toast(d.error||'Error')
+  }catch(e){toast('Error')}
+}
+
+function fmt(n){return n>=1000?(n/1000).toFixed(1)+'K':Math.round(n)}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
+
+ensureJoined();load();setInterval(load,10000);
+</script>
+</body>
+</html>

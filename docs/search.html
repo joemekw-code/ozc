@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OZC — Information Trust Search</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,sans-serif;background:#fff;color:#1a1a1a;font-size:14px;line-height:1.5}
+.header{padding:16px 20px;border-bottom:1px solid #e5e5e5;display:flex;align-items:center;gap:16px;position:sticky;top:0;background:#fff;z-index:10}
+.logo{font-size:18px;font-weight:800;color:#1a1a1a;text-decoration:none}
+.logo span{color:#2563eb}
+.search-bar{flex:1;max-width:600px;display:flex;gap:8px}
+.search-bar input{flex:1;padding:8px 14px;border:1px solid #ddd;border-radius:20px;font-size:14px;outline:none}
+.search-bar input:focus{border-color:#2563eb}
+.search-bar button{padding:8px 16px;background:#2563eb;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px}
+.wallet{font-size:12px;color:#888;display:flex;align-items:center;gap:8px}
+.wallet b{color:#2563eb}
+.main{max-width:800px;margin:0 auto;padding:16px 20px}
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid #e5e5e5;padding-bottom:8px}
+.tab{padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;border:none;background:none;color:#666}
+.tab.active{background:#eff6ff;color:#2563eb;font-weight:600}
+.result{padding:14px 0;border-bottom:1px solid #f3f4f6}
+.result-url{font-size:11px;color:#888;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.result-url a{color:#888;text-decoration:none}
+.result-title{font-size:16px;color:#1a46c2;cursor:pointer;font-weight:400}
+.result-title:hover{text-decoration:underline}
+.result-desc{font-size:13px;color:#555;margin-top:4px}
+.result-meta{display:flex;gap:12px;margin-top:6px;font-size:11px;color:#888}
+.trust-badge{display:inline-flex;align-items:center;gap:3px;background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:10px;font-weight:600;font-size:11px}
+.trust-badge.high{background:#dcfce7;color:#166534}
+.trust-badge.med{background:#fef9c3;color:#854d0e}
+.trust-badge.low{background:#f3f4f6;color:#666}
+.stake-btn{padding:2px 10px;border:1px solid #ddd;border-radius:12px;font-size:11px;cursor:pointer;background:#fff;color:#555}
+.stake-btn:hover{background:#eff6ff;border-color:#2563eb;color:#2563eb}
+.add-section{background:#f9fafb;border:1px solid #e5e5e5;border-radius:10px;padding:16px;margin-top:20px}
+.add-section h3{font-size:13px;font-weight:600;margin-bottom:10px}
+.add-form{display:flex;flex-direction:column;gap:8px}
+.add-form input,.add-form textarea{padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit}
+.add-form textarea{height:50px;resize:vertical}
+.add-form .row{display:flex;gap:8px}
+.add-form .row input{flex:1}
+.add-form button{align-self:flex-start;padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px}
+.stats{display:flex;gap:16px;padding:12px 0;font-size:12px;color:#888}
+.stats b{color:#1a1a1a}
+.empty{text-align:center;padding:40px;color:#888}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);z-index:100;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:20px;width:380px;max-width:90vw}
+.modal h3{margin-bottom:12px;font-size:15px}
+.modal input{width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:10px}
+.modal .btns{display:flex;gap:8px;justify-content:flex-end}
+.modal .btns button{padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer}
+.modal .btn-cancel{background:#f3f4f6;border:none;color:#666}
+.modal .btn-stake{background:#2563eb;border:none;color:#fff}
+footer{text-align:center;padding:20px;font-size:11px;color:#bbb;border-top:1px solid #e5e5e5;margin-top:40px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="#" class="logo">OZC<span>.</span></a>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search information by keyword or paste URL...">
+    <button onclick="doSearch()">Search</button>
+  </div>
+  <div class="wallet">
+    <span id="walletInfo"></span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-sort="trust" onclick="setSort('trust',this)">By Trust Score</button>
+    <button class="tab" data-sort="newest" onclick="setSort('newest',this)">Newest</button>
+    <button class="tab" data-sort="relevance" onclick="setSort('relevance',this)">By Relevance</button>
+  </div>
+
+  <div id="results"></div>
+
+  <div class="add-section">
+    <h3>Register information & stake on it</h3>
+    <div class="add-form">
+      <input type="url" id="addUrl" placeholder="https://... (any URL on the internet)">
+      <div class="row">
+        <input type="text" id="addTitle" placeholder="Title (optional — auto-detected)">
+        <input type="number" id="addAmount" value="10" min="1" style="max-width:100px" placeholder="OZC">
+      </div>
+      <textarea id="addSummary" placeholder="Why is this information valuable? (optional)"></textarea>
+      <button onclick="stakeOnUrl()">Stake OZC on this information</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="stakeModal">
+  <div class="modal">
+    <h3>Stake on: <span id="modalTitle"></span></h3>
+    <input type="number" id="modalAmount" value="10" min="1" placeholder="Amount (OZC)">
+    <div class="btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-stake" onclick="confirmStake()">Stake</button>
+    </div>
+  </div>
+</div>
+
+<footer>OZC — Every piece of information has a trust price. You decide what's worth trusting.</footer>
+
+<script>
+const API = localStorage.getItem('ozc_api') || '';
+let currentSort = 'trust';
+let currentQuery = '';
+let myAgent = localStorage.getItem('ozc_agent');
+let stakeTarget = null;
+
+if (!myAgent) {
+  myAgent = 'user-' + Math.random().toString(36).slice(2,8);
+  localStorage.setItem('ozc_agent', myAgent);
+  fetch(API+'/api/market/join', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({agent:myAgent})}).catch(()=>{});
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+
+function setSort(s, el) {
+  currentSort = s;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  doSearch();
+}
+
+async function doSearch() {
+  currentQuery = document.getElementById('searchInput').value.trim();
+  try {
+    const r = await fetch(`${API}/api/market/search?q=${encodeURIComponent(currentQuery)}&sort=${currentSort}&limit=50`);
+    const d = await r.json();
+    renderResults(d);
+  } catch(e) { document.getElementById('results').innerHTML='<div class="empty">Backend API offline.<br><small>To connect your local server: run <code>localStorage.setItem(\'ozc_api\',\'YOUR_TUNNEL_URL\')</code> in the browser console and reload.</small></div>'; }
+}
+
+function renderResults(d) {
+  const el = document.getElementById('results');
+  document.getElementById('stats').innerHTML = `<span><b>${d.count}</b> results</span><span>sorted by <b>${d.sort}</b></span>`;
+
+  if (!d.results || d.results.length === 0) {
+    el.innerHTML = '<div class="empty">No results. Be the first to register information and stake on it.</div>';
+    return;
+  }
+
+  el.innerHTML = d.results.map((r,i) => {
+    const badge = r.trust_score > 100 ? 'high' : r.trust_score > 20 ? 'med' : 'low';
+    const url = r.url || '';
+    const displayUrl = url ? new URL(url).hostname : r.deployer;
+    return `
+      <div class="result">
+        <div class="result-url">
+          ${url ? `<a href="${url}" target="_blank">${displayUrl}</a>` : `<span>${displayUrl}</span>`}
+          <span class="trust-badge ${badge}">${r.trust_score.toFixed(1)} OZC</span>
+        </div>
+        <div class="result-title" onclick="${url ? `window.open('${url}')` : ''}">${r.title}</div>
+        <div class="result-desc">${r.summary || ''}</div>
+        <div class="result-meta">
+          <span>${r.total_staked.toFixed(1)} OZC staked</span>
+          <span>by ${r.deployer}</span>
+          <button class="stake-btn" onclick="openStake('${r.id}','${r.title.replace(/'/g,"\\'")}')">+ Stake</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openStake(id, title) {
+  stakeTarget = id;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('stakeModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('stakeModal').classList.remove('show');
+  stakeTarget = null;
+}
+
+async function confirmStake() {
+  if (!stakeTarget) return;
+  const amount = parseFloat(document.getElementById('modalAmount').value) || 10;
+  try {
+    const r = await fetch(`${API}/api/market/stake`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({agent:myAgent, data_id:stakeTarget, amount})
+    });
+    const d = await r.json();
+    if (d.ok) { closeModal(); doSearch(); }
+    else alert(d.error || 'Failed');
+  } catch(e) { alert('Error: '+e.message); }
+}
+
+async function stakeOnUrl() {
+  const url = document.getElementById('addUrl').value.trim();
+  const title = document.getElementById('addTitle').value.trim() || url;
+  const amount = parseFloat(document.getElementById('addAmount').value) || 10;
+  const summary = document.getElementById('addSummary').value.trim();
+  if (!url) { alert('Enter a URL'); return; }
+  try {
+    const r = await fetch(`${API}/api/market/stake-url`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({agent:myAgent, url, title, summary, amount})
+    });
+    const d = await r.json();
+    if (d.ok) {
+      document.getElementById('addUrl').value = '';
+      document.getElementById('addTitle').value = '';
+      document.getElementById('addSummary').value = '';
+      doSearch();
+    } else alert(d.error || 'Failed');
+  } catch(e) { alert('Error: '+e.message); }
+}
+
+async function loadWallet() {
+  try {
+    const r = await fetch(`${API}/api/market/stats`);
+    const d = await r.json();
+    document.getElementById('walletInfo').innerHTML = `<b>${d.users}</b> participants · <b>${d.listings}</b> items · <b>${d.total_staked}</b> OZC staked`;
+  } catch(e) {}
+}
+
+doSearch();
+loadWallet();
+setInterval(()=>{ doSearch(); loadWallet(); }, 15000);
+</script>
+</body>
+</html>
