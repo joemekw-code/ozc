@@ -289,6 +289,50 @@ async function main() {
       console.log(`Claim published.\n  hash: ${hash}\n  tx:   ${tx}`);
       return;
     }
+    case "buy": {
+      // Buy OZC with ETH via OZCSwap
+      const ethAmount = args[0];
+      if (!ethAmount) { console.error("Usage: ozc buy <eth_amount>"); process.exit(1); }
+      const { wal } = signer();
+      const SWAP = process.env.OZC_SWAP || "0x0000000000000000000000000000000000000000";
+      const SWAP_ABI = [
+        { name:"buyOZC", type:"function", stateMutability:"payable", inputs:[], outputs:[] },
+        { name:"getPrice", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+        { name:"reserveETH", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+        { name:"reserveOZC", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+      ];
+      const wei = parseUnits(ethAmount, 18);
+      const rETH = await pub.readContract({ address: SWAP, abi: SWAP_ABI, functionName:"reserveETH" });
+      const rOZC = await pub.readContract({ address: SWAP, abi: SWAP_ABI, functionName:"reserveOZC" });
+      const expectedOZC = (rOZC * wei) / (rETH + wei);
+      console.log(`Buying OZC with ${ethAmount} ETH (est. ${formatUnits(expectedOZC, 18)} OZC)...`);
+      const tx = await wal.writeContract({ address: SWAP, abi: SWAP_ABI, functionName:"buyOZC", value: wei });
+      console.log(`Bought OZC.  tx: ${tx}`);
+      return;
+    }
+    case "sell-ozc": {
+      // Sell OZC for ETH via OZCSwap
+      const ozcAmount = args[0];
+      if (!ozcAmount) { console.error("Usage: ozc sell-ozc <ozc_amount>"); process.exit(1); }
+      const { wal } = signer();
+      const SWAP = process.env.OZC_SWAP || "0x0000000000000000000000000000000000000000";
+      const SWAP_ABI = [
+        { name:"sellOZC", type:"function", inputs:[{type:"uint256"}], outputs:[] },
+        { name:"reserveETH", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+        { name:"reserveOZC", type:"function", stateMutability:"view", inputs:[], outputs:[{type:"uint256"}] },
+      ];
+      const TOK_APPROVE = [{ name:"approve", type:"function", inputs:[{type:"address"},{type:"uint256"}], outputs:[{type:"bool"}] }];
+      const amt = parseUnits(ozcAmount, 18);
+      const rETH = await pub.readContract({ address: SWAP, abi: SWAP_ABI, functionName:"reserveETH" });
+      const rOZC = await pub.readContract({ address: SWAP, abi: SWAP_ABI, functionName:"reserveOZC" });
+      const expectedETH = (rETH * amt) / (rOZC + amt);
+      console.log(`Selling ${ozcAmount} OZC (est. ${formatUnits(expectedETH, 18)} ETH)...`);
+      const tokenAddr = process.env.OZC_TOKEN || TOKEN;
+      await wal.writeContract({ address: tokenAddr, abi: TOK_APPROVE, functionName:"approve", args:[SWAP, amt] });
+      const tx = await wal.writeContract({ address: SWAP, abi: SWAP_ABI, functionName:"sellOZC", args:[amt] });
+      console.log(`Sold OZC.  tx: ${tx}`);
+      return;
+    }
     default:
       console.log(`Usage:
   ozc list                                Show all claims
@@ -299,8 +343,11 @@ async function main() {
   ozc back <id> <units>                   Back a claim
   ozc unback <id> <units>                 Withdraw backing
   ozc publish <raw> <title> <desc>        Publish a new claim
+  ozc buy <eth_amount>                    Buy OZC with ETH (needs OZC_SWAP)
+  ozc sell-ozc <ozc_amount>               Sell OZC for ETH (needs OZC_SWAP)
 Environment:
   OZC_PRIVATE_KEY   required for write commands
+  OZC_SWAP          OZCSwap contract address (for buy/sell-ozc)
   OZC_RPC           optional override (default: base publicnode)`);
   }
 }
