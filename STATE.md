@@ -1,6 +1,6 @@
 # OZC State
 
-Generated at: 2026-08-25T00:51:19.492Z
+Generated at: 2026-08-25T06:33:17.119Z
 
 - Network: base-mainnet
 - Registry: 0x3ca993e7183824e11b2a65cf183b4c3521bf4754
